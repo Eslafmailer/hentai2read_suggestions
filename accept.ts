@@ -1,13 +1,7 @@
 import {readFileSync} from "fs";
 import {printError, promiseAll} from "./utils";
-import {addToFavorites, db, enableFavorites} from "./shared";
+import {addToFavorites, db, enableFavorites, reverseMapping} from "./shared";
 import {loadBook} from "./load-book";
-import {mapping} from "./anonymize";
-
-export const reverseMapping: Record<string, string> = {};
-for(const [key, value] of Object.entries(mapping)) {
-    reverseMapping[value] = key;
-}
 
 export const RESULT_FILE_NAME = 'result.json';
 export const result: string[] = JSON.parse(readFileSync(RESULT_FILE_NAME, 'utf-8'));

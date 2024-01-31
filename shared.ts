@@ -34,6 +34,13 @@ export type DB = Record<string, Book>;
 export const DB_FILE_NAME = 'db.json';
 export const db: DB = existsSync(DB_FILE_NAME) ? JSON.parse(readFileSync(DB_FILE_NAME, 'utf-8')) : {};
 
+export const MAPPING_FILE_NAME = 'mapping.json';
+export const mapping: Record<string, string> = existsSync(MAPPING_FILE_NAME) ? JSON.parse(readFileSync(MAPPING_FILE_NAME, 'utf-8')) : {};
+export const reverseMapping: Record<string, string> = {};
+for(const [key, value] of Object.entries(mapping)) {
+    reverseMapping[value] = key;
+}
+
 export interface Links {
     names: string[];
     last: boolean;

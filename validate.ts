@@ -1,6 +1,5 @@
 import {readdirSync, readFileSync} from 'fs';
-import {db} from "./shared";
-import {reverseMapping} from "./accept";
+import {db, reverseMapping} from "./shared";
 
 const files = readdirSync(__dirname);
 for(const file of files) {
