@@ -1,16 +1,53 @@
 // script.js
 
-// Function to create checkbox filters with count
-function createCheckboxFilterWithCount(items, containerId) {
+// Function to clear author filter
+function clearAuthorFilter() {
+    document.querySelectorAll('#author-filters input[type="radio"]').forEach(radio => {
+        radio.checked = false;
+    });
+    filterBooks();
+    updateFilterCounts();
+}
+
+// In your existing script where you set up event listeners, add:
+document.getElementById('clear-authors').addEventListener('click', clearAuthorFilter);
+
+// Function to filter options based on search input
+function filterOptions(inputId, containerId) {
+    const searchText = document.getElementById(inputId).value.toLowerCase();
+    const items = document.querySelectorAll(`#${containerId} label`);
+
+    items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchText)) {
+            item.previousElementSibling.style.display = '';
+            item.style.display = '';
+            item.nextElementSibling.style.display = '';
+            item.nextElementSibling.nextElementSibling.style.display = '';
+        } else {
+            item.previousElementSibling.style.display = 'none';
+            item.style.display = 'none';
+            item.nextElementSibling.style.display = 'none';
+            item.nextElementSibling.nextElementSibling.style.display = 'none';
+        }
+    });
+}
+
+// Event listeners for category and tag search inputs
+document.getElementById('category-search').addEventListener('input', () => filterOptions('category-search', 'category-filters'));
+document.getElementById('tag-search').addEventListener('input', () => filterOptions('tag-search', 'tag-filters'));
+
+// Function to create checkbox or radio button filters with count
+function createFilterWithCount(items, containerId, isRadio = false) {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear existing content
 
     items.forEach(item => {
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = item;
-        checkbox.name = item;
-        checkbox.value = item;
+        const input = document.createElement('input');
+        input.type = isRadio ? 'radio' : 'checkbox';
+        input.id = item;
+        input.name = isRadio ? 'author-filter' : item; // Radio buttons need the same 'name' attribute
+        input.value = item;
 
         const label = document.createElement('label');
         label.htmlFor = item;
@@ -21,13 +58,13 @@ function createCheckboxFilterWithCount(items, containerId) {
         countSpan.id = `count-${containerId}-${item}`;
         countSpan.style.marginLeft = '5px';
 
-        container.appendChild(checkbox);
+        container.appendChild(input);
         container.appendChild(label);
         container.appendChild(countSpan);
         container.appendChild(document.createElement('br'));
 
-        // Attach event listener to each checkbox
-        checkbox.addEventListener('change', () => {
+        // Attach event listener to each input
+        input.addEventListener('change', () => {
             filterBooks();
         });
     });
@@ -72,10 +109,13 @@ function addFilters() {
 
     const authors = Object.keys(authorCounts).sort((a, b) => authorCounts[b] - authorCounts[a]);
 
-    // Creating checkboxes for categories and tags
-    createCheckboxFilterWithCount(categories, 'category-filters');
-    createCheckboxFilterWithCount(tags, 'tag-filters');
-    createCheckboxFilterWithCount(authors, 'author-filters');}
+    // Creating checkbox filters with counts for categories, tags
+    createFilterWithCount(categories, 'category-filters');
+    createFilterWithCount(tags, 'tag-filters');
+
+    // Creating radio button filters for authors
+    createFilterWithCount(authors, 'author-filters', true);
+}
 
 // Function to filter books based on selected categories and tags
 function filterBooks() {
@@ -117,6 +157,7 @@ function displayBooks(filteredBooks) {
     for (let ind = 0; ind < max; ind++) {
         const book = filteredBooks[ind]
         const bookElement = document.createElement('a');
+        bookElement.target = "_blank";
         bookElement.href = book.href;
         bookElement.className = 'book';
         bookElement.innerHTML = `

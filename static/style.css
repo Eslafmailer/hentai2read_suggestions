@@ -13,10 +13,29 @@ body, html {
 
 #filters {
     width: 200px;
-    padding: 10px;
+    padding: 0 10px;
     border-right: 1px solid #ccc;
-    max-height: 100%; /* Set maximum height */
-    overflow-y: auto; /* Enable vertical scrolling */
+    height: 100%; /* Full height of the parent */
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-section {
+    flex: 1; /* Distributes space evenly among filter sections */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Prevents overflow */
+}
+
+.filter-section h2, .filter-section input, .filter-section button {
+    flex-shrink: 0; /* Prevents headers, inputs, and buttons from shrinking */
+}
+
+.scrollable-filter-container {
+    overflow-y: auto;
+    flex-grow: 1; /* Allows this container to fill up remaining space */
+    flex-shrink: 1; /* Allows shrinking if needed */
+    min-height: 0; /* Allows for proper scrolling in flex containers */
 }
 
 #books {
@@ -24,6 +43,7 @@ body, html {
     padding: 10px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
     max-height: 100%; /* Set maximum height */
     overflow-y: auto; /* Enable vertical scrolling */
@@ -34,7 +54,7 @@ body, html {
     padding: 10px;
     text-align: center;
     margin-bottom: 20px;
-    max-height: 300px;
+    max-height: 200px;
     display: flex;
     flex-direction: column;
 }
@@ -42,7 +62,7 @@ body, html {
 .book img {
     max-width: 100%;
     height: auto;
-    max-height: 200px;
+    max-height: 150px;
     object-fit: cover;
 }
 
