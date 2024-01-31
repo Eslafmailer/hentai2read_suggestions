@@ -10,25 +10,21 @@ import {writeFileSync} from "fs";
     await walkPagedLinks(
         loadFalseLinks,
         createLabeler(false),
-        async () => {
-            writeFileSync(DB_FILE_NAME, JSON.stringify(db, null, 2));
-        });
+    );
 
     console.log('Loading True labels');
     await walkPagedLinks(
         loadTrueLinks,
         createLabeler(true),
-        async () => {
-            writeFileSync(DB_FILE_NAME, JSON.stringify(db, null, 2));
-        });
+    );
 
     console.log('Loading True labels2');
     await walkPagedLinks(
         loadTrueLinks2,
         createLabeler(true),
-        async () => {
-            writeFileSync(DB_FILE_NAME, JSON.stringify(db, null, 2));
-        });
+    );
+
+    writeFileSync(DB_FILE_NAME, JSON.stringify(db, null, 2));
 })().catch(printError);
 
 function createLabeler(value: boolean) {
