@@ -69,12 +69,14 @@ def train_kmeans():
     return codebook
 
 def calculate_word_freq(codebook):
+    files_to_remove = []
     visual_words = []
     # for ind in np.random.randint(0, len(files) + 1, NUM_DESCRIPTORS_TO_TRAIN_KMEANS * 10).tolist():
     #     file = files[ind]
     for file in files:
         descriptor = extract(file)
         if descriptor is None:
+            files_to_remove.append(file)
             print('missing descriptor for', file)
             continue
 
@@ -83,6 +85,8 @@ def calculate_word_freq(codebook):
         visual_words.append(img_visual_words)
     print('first image words', visual_words[0][:5], len(visual_words[0]))
 
+    for file in files_to_remove:
+        files.remove(file)
 
     frequency_vectors = []
     for img_visual_words in visual_words:
