@@ -9,3 +9,4 @@ result*.json
 tsconfig.tsbuildinfo
 files/
 cover*.json
+cover*.zip
