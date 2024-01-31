@@ -202,7 +202,7 @@ class Img2Vec():
             elif model_name == "efficientnet_b6":
                 model = models.efficientnet_b6(pretrained=True)
             elif model_name == "efficientnet_b7":
-                model = models.efficientnet_b7(pretrained=True)
+                model = models.efficientnet_b7(weights=models.EfficientNet_B7_Weights.DEFAULT)
             else:
                 raise KeyError('Un support %s.' % model_name)
 
@@ -221,6 +221,17 @@ model = None if args.model is None else args.model.replace("'", "")
 img2Vec = Img2Vec(model=model)
 
 result = []
+chunk = 0
+
+def save():
+    global result
+    global chunk
+    json_object = json.dumps(result, indent=4)
+    result_file_name = (str(chunk) + '.').join(RESULT_FILE.split('.'))
+    with open(result_file_name, "w") as outfile:
+        outfile.write(json_object)
+    result = []
+    chunk = chunk + 1
 
 for file in tqdm(files):
     file_name = os.path.basename(file)
@@ -241,6 +252,8 @@ for file in tqdm(files):
 
     result.append(item)
 
-json_object = json.dumps(result, indent=4)
-with open(RESULT_FILE, "w") as outfile:
-    outfile.write(json_object)
+    size = (len(result) * 20 * img2Vec.layer_output_size) / 1024 / 1024
+    if size > 1000:
+        save()
+
+save()
