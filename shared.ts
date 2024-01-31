@@ -79,7 +79,7 @@ export interface Links {
     last: boolean;
 }
 
-export async function loadPagedLinks(page: number, path: string): Promise<Links> {
+export async function loadPagedLinks(page: number, path: string, retryAttempts?: number): Promise<Links> {
     return await retry(async () => {
         console.log(`Loading page ${page}`);
         const PAGE_SIZE = 48;
@@ -108,7 +108,7 @@ export async function loadPagedLinks(page: number, path: string): Promise<Links>
             names: links.map(link => link.replace(config.url + '/', '').replace(/\/$/, '')),
             last: lastPage,
         };
-    });
+    }, retryAttempts);
 }
 
 export async function loadWebPage(url: string): Promise<string | undefined> {
@@ -130,8 +130,7 @@ export async function loadWebPage(url: string): Promise<string | undefined> {
     });
 }
 
-export async function retry<T>(action: () => Promise<T>): Promise<T> {
-    const MAX_ATTEMPTS = 10;
+export async function retry<T>(action: () => Promise<T>, attempts = 10): Promise<T> {
     let attempt = 0;
 
     while (true) {
@@ -139,7 +138,7 @@ export async function retry<T>(action: () => Promise<T>): Promise<T> {
             return await action();
         } catch (ex) {
             attempt++;
-            if (attempt > MAX_ATTEMPTS) {
+            if (attempt >= attempts) {
                 throw ex;
             }
 
@@ -171,10 +170,12 @@ export async function walkPagedLinks(loadLinks: (page: number) => Promise<Links>
 }
 
 export async function enableFavorites() {
+    console.log('Enabling favorites');
+
     const url = config.labels.true[0];
     assert(url);
 
-    const page = await loadPagedLinks(1, url);
+    const page = await loadPagedLinks(1, url, 1);
     const name = page.names[0];
     assert(name);
 
