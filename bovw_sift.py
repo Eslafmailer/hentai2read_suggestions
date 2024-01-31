@@ -12,14 +12,19 @@ from scipy.cluster.vq import kmeans
 from scipy.cluster.vq import vq
 import sys
 import json
+import argparse
 
 np.random.seed(42)
 
+parser = argparse.ArgumentParser(prog='Bag of visual words')
+parser.add_argument('--vocabulary_size', type=int)
+args = parser.parse_args()
+
 FILES_FOLDER = os.path.join('.', 'files')
-NUM_DESCRIPTORS_TO_TRAIN_KMEANS = 1000
+NUM_DESCRIPTORS_TO_TRAIN_KMEANS = 3000
 KMEANS_ITERATIONS = 1
-VOCABULARY_SIZE = 200
-RESULT_FILE = 'SIFT.json'
+VOCABULARY_SIZE = args.vocabulary_size or 200
+RESULT_FILE = 'cover-SIFT.json'
 
 extractor = cv2.SIFT_create()
 files = [os.path.join(FILES_FOLDER, f) for f in os.listdir(FILES_FOLDER) if os.path.isfile(os.path.join(FILES_FOLDER, f))]

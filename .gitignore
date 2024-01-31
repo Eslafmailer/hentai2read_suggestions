@@ -8,4 +8,4 @@ result*.json
 *.js
 tsconfig.tsbuildinfo
 files/
-SIFT.json
+cover*.json
