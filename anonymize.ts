@@ -9,9 +9,9 @@ if (usedRandomWords.size !== Object.values(mapping).length) {
 }
 
 export const DATA_FILE_NAME = 'data.json';
-export const data: Book[] = [];
 
 (async () => {
+    const data: Book[] = [];
     for (const book of Object.values(db)) {
         book.name = anonymize(book.name);
         anonymizeAll('authors', book);

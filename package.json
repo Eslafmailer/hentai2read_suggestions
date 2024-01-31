@@ -36,6 +36,10 @@
 
     "anonymize": "tsc && node anonymize.js",
     "accept": "tsc && node accept.js",
-    "validate": "tsc && node validate.js"
+    "validate": "tsc && node validate.js",
+
+    "static:images": "tsc && node label-images.js && mv images/true/ static/images/ && rm -rf images",
+    "static:script": "tsc && node static.js",
+    "static:publish": "surge && rm -rf static/images && rm -rf static/books.js"
   }
 }
