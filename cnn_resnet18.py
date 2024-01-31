@@ -69,11 +69,16 @@ def extract(file):
     # 8. Return the feature vector
     return my_embedding
 
-result = {}
+result = []
 
 for file in tqdm(files):
     file_name = os.path.basename(file)
-    result[file_name] = extract(file).cpu().numpy().tolist()
+
+    item = {}
+    item['id'] = file_name
+    item['cover'] = extract(file).cpu().numpy().tolist()
+
+    result.append(item)
 
 json_object = json.dumps(result, indent=4)
 with open(RESULT_FILE, "w") as outfile:
