@@ -18,15 +18,17 @@ np.random.seed(42)
 
 parser = argparse.ArgumentParser(prog='Bag of visual words')
 parser.add_argument('--vocabulary_size', type=int)
+parser.add_argument('--algorithm', type=ascii)
 args = parser.parse_args()
 
 FILES_FOLDER = os.path.join('.', 'files')
 NUM_DESCRIPTORS_TO_TRAIN_KMEANS = 3000
 KMEANS_ITERATIONS = 1
 VOCABULARY_SIZE = args.vocabulary_size or 200
-RESULT_FILE = 'cover-SIFT.json'
+RESULT_FILE = 'cover.json'
 
-extractor = cv2.SIFT_create()
+algorithm = args.algorithm or 'sift'
+extractor = cv2.SIFT_create() if algorithm == 'sift' else cv2.ORB_create()
 files = [os.path.join(FILES_FOLDER, f) for f in os.listdir(FILES_FOLDER) if os.path.isfile(os.path.join(FILES_FOLDER, f))]
 print('files', len(files))
 
@@ -47,7 +49,10 @@ def extract(file):
     # plt.imshow(output, cmap='gray')
     # plt.show()
 
-    return img_descriptors
+    if img_descriptors is None:
+        return img_descriptors
+
+    return np.array(list(map(lambda x: x.astype(np.float32), img_descriptors)))
 
 def train_kmeans():
     # select 1000 random image index values
