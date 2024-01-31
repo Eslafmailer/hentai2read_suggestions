@@ -24,6 +24,7 @@
     "label": "tsc && node label.js",
     "add-cover": "tsc && node add-cover.js",
     "anonymize": "tsc && node anonymize.js",
-    "accept": "tsc && node accept.js"
+    "accept": "tsc && node accept.js",
+    "validate": "tsc && node validate.js"
   }
 }

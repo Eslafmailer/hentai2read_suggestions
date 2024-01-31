@@ -4,7 +4,7 @@ import {Book, db} from "./shared";
 import {existsSync, readFileSync, writeFileSync} from "fs";
 
 export const MAPPING_FILE_NAME = 'mapping.json';
-export const mapping: Record<string, string> =existsSync(MAPPING_FILE_NAME) ? JSON.parse(readFileSync(MAPPING_FILE_NAME, 'utf-8')) : {};
+export const mapping: Record<string, string> = existsSync(MAPPING_FILE_NAME) ? JSON.parse(readFileSync(MAPPING_FILE_NAME, 'utf-8')) : {};
 const usedRandomWords = new Set<string>(Object.values(mapping));
 if (usedRandomWords.size !== Object.values(mapping).length) {
     throw new Error(`Duplicate keys in mapping detected!`);

@@ -4,15 +4,19 @@ import {addToFavorites, db, enableFavorites} from "./shared";
 import {loadBook} from "./load-book";
 import {mapping} from "./anonymize";
 
+export const reverseMapping: Record<string, string> = {};
+for(const [key, value] of Object.entries(mapping)) {
+    reverseMapping[value] = key;
+}
+
 export const RESULT_FILE_NAME = 'result.json';
 export const result: string[] = JSON.parse(readFileSync(RESULT_FILE_NAME, 'utf-8'));
 
 (async () => {
     await enableFavorites();
 
-    const mappings = Object.entries(mapping);
     await promiseAll(result, async name_ => {
-        const name = mappings.find(x => x[1] === name_)?.[0];
+        const name = reverseMapping[name_];
         if(!name) {
             console.warn(`Can't de-anonymize: ${name_}`);
             return;
