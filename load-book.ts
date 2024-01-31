@@ -13,11 +13,14 @@ export async function loadBook(name: string): Promise<Book | undefined> {
     console.log(`Loading book ${name}`);
     const url = config.url + `/${name}/`;
 
-    let data: string;
+    let data: string | undefined;
     try {
         data = await loadWebPage(url);
+        if (!data) {
+            return undefined;
+        }
     } catch (ex) {
-        if (assertError<{ response?: {status: number} }>(ex) && ex.response?.status === 404) {
+        if (assertError<{ response?: { status: number } }>(ex) && ex.response?.status === 404) {
             return undefined;
         }
         throw ex;
@@ -82,7 +85,7 @@ export async function loadBook(name: string): Promise<Book | undefined> {
         }
 
         const result = /([\d,]+) chapters$/.exec(value);
-        if(!result) {
+        if (!result) {
             return 1;
         }
 
@@ -157,7 +160,7 @@ export async function loadBook(name: string): Promise<Book | undefined> {
 
             const regex = /uploaded .* about (\d+)(.*) ago/;
             const result = regex.exec(uploadedText);
-            if(!result) {
+            if (!result) {
                 throw new Error(`Can't parse uploaded ${url}, ${uploadedText}`);
             }
 
@@ -170,12 +173,12 @@ export async function loadBook(name: string): Promise<Book | undefined> {
 
     const getId = (): number => {
         const midStr = $('.js-addBookmark').data('mid');
-        if(!midStr) {
+        if (!midStr) {
             throw new Error(`Can't find mid ${url}`);
         }
 
         const mid = Number(midStr);
-        if(Number.isNaN(mid)) {
+        if (Number.isNaN(mid)) {
             throw new Error(`Can't parse mid ${url}: ${midStr}`);
         }
 
@@ -195,7 +198,7 @@ export async function loadBook(name: string): Promise<Book | undefined> {
                 });
                 return Buffer.from(response.data, 'binary').toString('base64');
             } catch (ex) {
-                if(ex?.['response']?.['status'] === 404) {
+                if (ex?.['response']?.['status'] === 404) {
                     return undefined;
                 }
 
@@ -206,9 +209,9 @@ export async function loadBook(name: string): Promise<Book | undefined> {
 
     const id = getId();
     const coverFile = join(FILES_FOLDER, String(id));
-    if(!existsSync(coverFile)) {
+    if (!existsSync(coverFile)) {
         const cover = await getCover();
-        if(cover) {
+        if (cover) {
             await promises.writeFile(coverFile, cover);
         }
     }

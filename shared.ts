@@ -37,7 +37,7 @@ export const db: DB = existsSync(DB_FILE_NAME) ? JSON.parse(readFileSync(DB_FILE
 export const MAPPING_FILE_NAME = 'mapping.json';
 export const mapping: Record<string, string> = existsSync(MAPPING_FILE_NAME) ? JSON.parse(readFileSync(MAPPING_FILE_NAME, 'utf-8')) : {};
 export const reverseMapping: Record<string, string> = {};
-for(const [key, value] of Object.entries(mapping)) {
+for (const [key, value] of Object.entries(mapping)) {
     reverseMapping[value] = key;
 }
 
@@ -52,10 +52,14 @@ export async function loadPagedLinks(page: number, path: string): Promise<Links>
         const PAGE_SIZE = 48;
         const url = config.url + `/${atob(path)}/${page}/`;
         const data = await loadWebPage(url);
+        if (!data) {
+            throw new Error(`Can't load page links: ${url}`);
+        }
+
         const $ = load(data);
 
         const pages = $('.pagination li').get().map(x => $(x).text().trim()).filter(isTruthy).at(-1);
-        if(!pages) {
+        if (!pages) {
             throw new Error(`Can't find pagination ${url}`);
         }
         console.log(`Loaded page ${page}/${pages}`)
@@ -74,16 +78,26 @@ export async function loadPagedLinks(page: number, path: string): Promise<Links>
     });
 }
 
-export async function loadWebPage(url: string): Promise<string> {
+export async function loadWebPage(url: string): Promise<string | undefined> {
     return retry(async () => {
-        const {data}: AxiosResponse<string> = await axios.get(url, {
-            headers: {
-                'Cookie': config.cookie
-            },
-        });
-        return data;
+        try {
+            const {data}: AxiosResponse<string> = await axios.get(url, {
+                headers: {
+                    'Cookie': config.cookie
+                },
+            });
+            return data;
+        } catch (ex) {
+            if (ex?.['response']?.['status'] === 404) {
+                return undefined;
+            }
+
+            throw ex;
+        }
     });
-}export async function retry<T>(action: () => Promise<T>): Promise<T> {
+}
+
+export async function retry<T>(action: () => Promise<T>): Promise<T> {
     const MAX_ATTEMPTS = 10;
     let attempt = 0;
 
