@@ -37,15 +37,6 @@ export async function loadBook(name: string): Promise<Book | undefined> {
         infos.set(name, values);
     });
 
-    const hash = btoa(name);
-    let coverFile = join(FILES_FOLDER, hash);
-    if(!existsSync(coverFile)) {
-        const cover = await getCover();
-        if(cover) {
-            await promises.writeFile(coverFile, cover);
-        }
-    }
-
     const getViews = (): number => {
         const [value] = infos.get('view') ?? [];
         if (!value) {
@@ -213,6 +204,15 @@ export async function loadBook(name: string): Promise<Book | undefined> {
         });
     }
 
+    const id = getId();
+    let coverFile = join(FILES_FOLDER, String(id));
+    if(!existsSync(coverFile)) {
+        const cover = await getCover();
+        if(cover) {
+            await promises.writeFile(coverFile, cover);
+        }
+    }
+
     const rating = $('.js-raty').siblings().first().text();
     const parsedRating = /score ([\d.]+)\/5 with (\d+) votes/.exec(rating);
     const [_, scoreStr, votesStr] = parsedRating ?? [];
@@ -229,9 +229,8 @@ export async function loadBook(name: string): Promise<Book | undefined> {
     if (isNaN(votes)) {
         throw new Error(`Can't parse votes: '${rating}' ${url}`);
     }
-
     return {
-        id: getId(),
+        id,
         name,
         views: getViews(),
         pages: getPages(),
