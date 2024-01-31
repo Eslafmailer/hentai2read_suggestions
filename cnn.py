@@ -1,10 +1,8 @@
 # https://github.com/christiansafka/img2vec/blob/master/img2vec_pytorch/img_to_vec.py
 
 import torch
-import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
-import numpy as np
 import argparse
 from io import BytesIO
 import base64
@@ -12,7 +10,6 @@ import os
 import json
 from tqdm import tqdm
 from PIL import Image
-import cv2
 
 parser = argparse.ArgumentParser(prog='CNN')
 parser.add_argument('--model', type=ascii)
@@ -239,16 +236,11 @@ for file in tqdm(files):
     with open(file) as f:
         contents = f.read()
 
-    # Load the image with Pillow library
-    image = np.array(Image.open(BytesIO(base64.b64decode(contents))))
-
-    # if grayscale, transform into RGB
-    rgb_image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB) if len(image.shape) != 3 else image
-    img = Image.fromarray(rgb_image)
+    image = Image.open(BytesIO(base64.b64decode(contents))).convert('RGB')
 
     item = {}
     item['id'] = file_name
-    item['cover'] = img2Vec.get_vec(img).tolist()
+    item['cover'] = img2Vec.get_vec(image).tolist()
 
     result.append(item)
 
