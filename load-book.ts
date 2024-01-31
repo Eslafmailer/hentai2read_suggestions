@@ -7,7 +7,7 @@ import axios from "axios";
 import {join} from 'path';
 import {existsSync, promises} from "fs";
 
-const FILES_FOLDER = join(__dirname, 'files');
+export const FILES_FOLDER = join(__dirname, 'files');
 
 export async function loadBook(name: string): Promise<Book | undefined> {
     console.log(`Loading book ${name}`);
@@ -205,7 +205,7 @@ export async function loadBook(name: string): Promise<Book | undefined> {
     }
 
     const id = getId();
-    let coverFile = join(FILES_FOLDER, String(id));
+    const coverFile = join(FILES_FOLDER, String(id));
     if(!existsSync(coverFile)) {
         const cover = await getCover();
         if(cover) {
