@@ -1,6 +1,6 @@
 import {writeFileSync} from "fs";
 import {printError} from "./utils";
-import {db, DB_FILE_NAME, enableFavorites, Links, loadPagedLinks, walkPagedLinks} from "./shared";
+import {config, db, DB_FILE_NAME, enableFavorites, loadPagedLinks, walkPagedLinks} from "./shared";
 import {loadBook} from "./load-book";
 import * as process from "process";
 import moment from 'moment';
@@ -18,7 +18,7 @@ const page = pageStr ? Number(pageStr) : undefined;
 (async () => {
     await enableFavorites();
     await walkPagedLinks(
-        loadLinksFromAll,
+        page => loadPagedLinks(page, config.all_pages),
         async name => {
             const existingBook = db[name];
             if (existingBook && (!existingBook.uploaded || !stopAfter || existingBook.uploaded < stopAfter)) {
@@ -38,8 +38,3 @@ const page = pageStr ? Number(pageStr) : undefined;
         !!stopAfter,
         page);
 })().catch(printError);
-
-async function loadLinksFromAll(page: number): Promise<Links> {
-    return loadPagedLinks(page, 'aGVudGFpLWxpc3QvYWxsL2FueS9hbGwvbGFzdC1hZGRlZA==');
-}
-

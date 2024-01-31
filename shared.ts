@@ -24,6 +24,11 @@ export interface Book {
 export interface Config {
     url: string;
     cookie: string;
+    all_pages: string;
+    labels: {
+        true: string[];
+        false: string[];
+    };
 }
 
 export const CONFIG_FILE_NAME = 'config.json';
