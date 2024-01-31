@@ -16,7 +16,7 @@ export const embeddings: Record<string, number[]> = JSON.parse(readFileSync(embe
     for (const [name64, embedding] of Object.entries(embeddings)) {
         const name = atob(name64);
         let book = db[name];
-        if(!book) {
+        if (!book) {
             throw new Error(`Unknown book - ${name}`);
         }
 

@@ -2,8 +2,8 @@ import {readdirSync, readFileSync} from 'fs';
 import {db, reverseMapping} from "./shared";
 
 const files = readdirSync(__dirname);
-for(const file of files) {
-    if(!/result.*\.json/.test(file)) {
+for (const file of files) {
+    if (!/result.*\.json/.test(file)) {
         continue;
     }
 
@@ -12,20 +12,20 @@ for(const file of files) {
     let unknown = 0;
     let tp = 0;
     let fp = 0;
-    for(const name of result) {
+    for (const name of result) {
         const realName = reverseMapping[name];
-        if(!realName) {
+        if (!realName) {
             console.log(`Missing name - ${name}`);
             continue;
         }
 
         const book = db[realName];
-        if(!book) {
+        if (!book) {
             console.log(`Missing book - ${name}`);
             continue;
         }
 
-        if(book.label == null) {
+        if (book.label == null) {
             unknown++;
         } else if (book.label) {
             tp++;

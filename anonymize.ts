@@ -12,7 +12,7 @@ export const DATA_FILE_NAME = 'data.json';
 export const data: Book[] = [];
 
 (async () => {
-    for(const book of Object.values(db)) {
+    for (const book of Object.values(db)) {
         book.name = anonymize(book.name);
         anonymizeAll('authors', book);
         anonymizeAll('categories', book);
@@ -27,9 +27,10 @@ export const data: Book[] = [];
 function anonymizeAll<K extends 'authors' | 'categories' | 'tags'>(key: K, book: Book) {
     book[key] = book[key].map(x => anonymize(x));
 }
+
 function anonymize(value: string): string {
     let anonymized = mapping[value];
-    if(!anonymized) {
+    if (!anonymized) {
         anonymized = mapping[value] = generate();
     }
 
@@ -39,7 +40,7 @@ function anonymize(value: string): string {
 function generate(length: number = 2): string {
     while (true) {
         const words = randomWords({exactly: length, join: '-'});
-        if(!usedRandomWords.has(words)) {
+        if (!usedRandomWords.has(words)) {
             usedRandomWords.add(words);
             return words;
         }

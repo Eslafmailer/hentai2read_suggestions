@@ -12,13 +12,14 @@ export function printError(ex: unknown) {
             console.log(red(ex));
         }
     } else {
-        if (assertError<{message: string}>(ex) && ex.message) {
+        if (assertError<{ message: string }>(ex) && ex.message) {
             console.log(red(ex.message));
         }
 
         console.log(stringifyError(ex));
     }
 }
+
 export function stringifyError(err: unknown): string {
     if (typeof err === 'string') {
         return err;
@@ -30,6 +31,7 @@ export function stringifyError(err: unknown): string {
         return getErrorMessage(err);
     }
 }
+
 export function getErrorMessage(err: unknown): string {
     if (err instanceof Error) {
         return err.message;
