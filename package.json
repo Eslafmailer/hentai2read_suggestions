@@ -20,6 +20,8 @@
   "scripts": {
     "scrap": "tsc && node scrap.js",
     "scrap:debug": "tsc && node --inspect-brk scrap.js",
+    "embedd:sift": "poetry run python bovw_sift.py",
+    "add-cover": "tsc && node add-cover.js",
     "label": "tsc && node label.js",
     "anonymize": "tsc && node anonymize.js",
     "accept": "tsc && node accept.js"
