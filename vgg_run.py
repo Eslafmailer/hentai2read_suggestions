@@ -49,7 +49,20 @@ ids = list(map(lambda x: str(x.get('id')), db.values()))
 ids = list(filter(lambda x: os.path.isfile(os.path.join(FILES_FOLDER, x)), ids))
 
 result = []
+resultSet = set()
+if os.path.isfile(RESULT_FILE):
+    with open(RESULT_FILE) as f:
+        contents = f.read()
+    result = json.loads(contents)
+
+    for entry in result:
+        resultSet.add(entry['id'])
+
 for chunk in tqdm(list(chunks(ids, BATCH_SIZE))):
+    chunk = list(filter(lambda x: x not in resultSet, chunk))
+    if not len(chunk):
+        continue
+
     image_paths = list(map(lambda x: os.path.join(FILES_FOLDER, x), chunk))
     prediction = predict(image_paths)
 
