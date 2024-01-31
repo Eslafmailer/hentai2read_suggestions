@@ -46,7 +46,9 @@ with open('/home/sergey/projects/scrapper/db.json') as f:
     db = json.load(f)
 
 ids = list(map(lambda x: str(x.get('id')), db.values()))
+print('all entries', len(ids))
 ids = list(filter(lambda x: os.path.isfile(os.path.join(FILES_FOLDER, x)), ids))
+print('entries with image', len(ids))
 
 result = []
 resultSet = set()
