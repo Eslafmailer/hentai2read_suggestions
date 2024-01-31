@@ -1,6 +1,6 @@
 import {readFileSync} from "fs";
 import {printError, promiseAll} from "./utils";
-import {addToFavorites, db, enableFavorites, reverseMapping} from "./shared";
+import {addToFavorites, config, db, enableFavorites, reverseMapping} from "./shared";
 import {loadBook} from "./load-book";
 
 export const RESULT_FILE_NAME = 'result.json';
@@ -28,6 +28,6 @@ export const result: string[] = JSON.parse(readFileSync(RESULT_FILE_NAME, 'utf-8
             return;
         }
 
-        await addToFavorites(book.id, 4);
+        await addToFavorites(book.id, config.input_category);
     });
 })().catch(printError);

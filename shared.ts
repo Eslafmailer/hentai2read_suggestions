@@ -2,6 +2,23 @@ import axios, {AxiosResponse} from "axios";
 import {load} from "cheerio";
 import {isTruthy, promiseAll} from "./utils";
 import {existsSync, readFileSync} from "fs";
+import assert from "assert";
+import {loadBook} from "./load-book";
+
+export enum Categories {
+    OnHold = 'on-hold',
+    PlanToRead = 'plan-to-read',
+    Completed = 'completed',
+    Favorite = 'favorite',
+    Reading = 'reading',
+}
+export const CategoryIDs: Record<Categories, number> = {
+    [Categories.OnHold]: 1,
+    [Categories.PlanToRead]: 2,
+    [Categories.Completed]: 3,
+    [Categories.Favorite]: 4,
+    [Categories.Reading]: 5,
+}
 
 export interface Book {
     id: number;
@@ -29,11 +46,22 @@ export interface Config {
         true: string[];
         false: string[];
     };
+    input_category: number;
 }
 
 export const CONFIG_FILE_NAME = 'config.json';
 export const config: Config = JSON.parse(readFileSync(CONFIG_FILE_NAME, 'utf-8'));
-config.url = atob(config.url)
+(() => {
+    assert(config.url, `url property is required in config`);
+    assert(config.all_pages, `all_pages property is required in config`);
+    assert(config.cookie, `cookie property is required in config`);
+    assert(config.input_category, `input_category property is required in config`);
+    assert(config.labels, `labels property is required in config`);
+    assert(config.labels.true.length, `true labels are required in config`);
+    assert(config.labels.false.length, `false labels are required in config`);
+})();
+
+config.url = atob(config.url);
 
 export type DB = Record<string, Book>;
 export const DB_FILE_NAME = 'db.json';
@@ -143,7 +171,21 @@ export async function walkPagedLinks(loadLinks: (page: number) => Promise<Links>
 }
 
 export async function enableFavorites() {
-    if (await addToFavorites(38385, 5)) {
+    const url = config.labels.true[0];
+    assert(url);
+
+    const page = await loadPagedLinks(1, url);
+    const name = page.names[0];
+    assert(name);
+
+    const book = await loadBook(name);
+    assert(book);
+
+    const categories: (keyof typeof Categories)[] = <(keyof typeof Categories)[]><unknown>Object.values(Categories);
+    const category = categories.find(x => atob(url).includes(x));
+    assert(category);
+
+    if (await addToFavorites(book.id, CategoryIDs[category])) {
         console.log('Enabled favorites');
     } else {
         throw new Error(`Failed to enable favorites`);

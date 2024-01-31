@@ -31,6 +31,7 @@
 
     "embedd:cnn:custom:prepare": "tsc && node label-images.js",
     "embedd:cnn:custom:train": "poetry run python vgg_train.py",
+    "postembedd:cnn:custom:train": "rm -rf images",
     "embedd:cnn:custom:predict": "poetry run python vgg_run.py",
 
     "anonymize": "tsc && node anonymize.js",
