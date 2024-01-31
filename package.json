@@ -40,6 +40,6 @@
 
     "static:images": "tsc && node label-images.js && mv images/true/ static/images/ && rm -rf images",
     "static:script": "tsc && node static.js",
-    "static:publish": "surge && rm -rf static/images && rm -rf static/books.js"
+    "static:publish": "surge ./static && rm -rf static/images && rm -rf static/books.js"
   }
 }

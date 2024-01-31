@@ -6,7 +6,6 @@ function clearAuthorFilter() {
         radio.checked = false;
     });
     filterBooks();
-    updateFilterCounts();
 }
 
 // In your existing script where you set up event listeners, add:
@@ -39,24 +38,38 @@ document.getElementById('tag-search').addEventListener('input', () => filterOpti
 
 // Function to create checkbox or radio button filters with count
 function createFilterWithCount(items, containerId, isRadio = false) {
+    const checked = new Set([...document.querySelectorAll(`#${containerId} input:checked`)].map(x => x.id));
+    items.sort((a, b) => {
+        if(checked.has(a.name) && !checked.has(b.name)) {
+            return -1;
+        } else if (!checked.has(a.name) && checked.has(b.name)) {
+            return 1;
+        } else {
+            return b.count - a.count;
+        }
+    });
+
+
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear existing content
 
-    items.forEach(item => {
+    items.forEach(({name, count}) => {
         const input = document.createElement('input');
         input.type = isRadio ? 'radio' : 'checkbox';
-        input.id = item;
-        input.name = isRadio ? 'author-filter' : item; // Radio buttons need the same 'name' attribute
-        input.value = item;
+        input.id = name;
+        input.name = isRadio ? 'author-filter' : name; // Radio buttons need the same 'name' attribute
+        input.value = name;
+        input.checked = checked.has(name);
 
         const label = document.createElement('label');
-        label.htmlFor = item;
-        label.textContent = item;
+        label.htmlFor = name;
+        label.textContent = name;
 
         // Span for showing count
         const countSpan = document.createElement('span');
-        countSpan.id = `count-${containerId}-${item}`;
+        countSpan.id = `count-${containerId}-${name}`;
         countSpan.style.marginLeft = '5px';
+        countSpan.textContent = count;
 
         container.appendChild(input);
         container.appendChild(label);
@@ -68,46 +81,35 @@ function createFilterWithCount(items, containerId, isRadio = false) {
             filterBooks();
         });
     });
-    updateFilterCounts(books);
-}
-
-// Function to update filter counts
-function updateFilterCounts(filteredBooks) {
-    // Update counts for category filters
-    document.querySelectorAll('#category-filters input').forEach(checkbox => {
-        const count = filteredBooks.filter(book => book.categories.includes(checkbox.value)).length;
-        document.getElementById(`count-category-filters-${checkbox.value}`).textContent = `(${count})`;
-    });
-
-    // Update counts for tag filters
-    document.querySelectorAll('#tag-filters input').forEach(checkbox => {
-        const count = filteredBooks.filter(book => book.tags.includes(checkbox.value)).length;
-        document.getElementById(`count-tag-filters-${checkbox.value}`).textContent = `(${count})`;
-    });
-
-    // Update counts for author filters
-    document.querySelectorAll('#author-filters input').forEach(checkbox => {
-        const count = filteredBooks.filter(book => book.authors.includes(checkbox.value)).length;
-        document.getElementById(`count-author-filters-${checkbox.value}`).textContent = `(${count})`;
-    });
 }
 
 // Function to add filters
-function addFilters() {
-    const categories = new Set();
-    const tags = new Set();
+function addFilters(filteredBooks) {
+    const categoryCounts = {};
+    const tagCounts = {};
     const authorCounts = {};
 
     // Extracting unique categories, tags, and authors
-    books.forEach(book => {
-        book.categories.forEach(category => categories.add(category));
-        book.tags.forEach(tag => tags.add(tag));
+    filteredBooks.forEach(book => {
+        book.categories.forEach(category => {
+            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        });
+        book.tags.forEach(tag => {
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
         book.authors.forEach(author => {
             authorCounts[author] = (authorCounts[author] || 0) + 1;
         });
     });
+    books.forEach(book => {
+        book.authors.forEach(author => {
+            authorCounts[author] = (authorCounts[author] || 0);
+        });
+    });
 
-    const authors = Object.keys(authorCounts).sort((a, b) => authorCounts[b] - authorCounts[a]);
+    const categories = Object.entries(categoryCounts).map(([name, count]) => ({ name, count }));
+    const tags = Object.entries(tagCounts).map(([name, count]) => ({ name, count }));
+    const authors = Object.entries(authorCounts).map(([name, count]) => ({ name, count }));
 
     // Creating checkbox filters with counts for categories, tags
     createFilterWithCount(categories, 'category-filters');
@@ -145,7 +147,7 @@ function filterBooks() {
     });
 
     displayBooks(filteredBooks);
-    updateFilterCounts(filteredBooks);
+    addFilters(filteredBooks);
 }
 
 // Modified displayBooks function to accept an array of books
@@ -170,5 +172,4 @@ function displayBooks(filteredBooks) {
 
 
 // Initial setup
-addFilters();
-displayBooks(books);
+filterBooks();
