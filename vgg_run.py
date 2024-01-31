@@ -12,7 +12,7 @@ BATCH_SIZE = 32
 RESULT_FILE = 'cover-vgg.json'
 
 model = tf.keras.models.load_model(os.path.join('.', 'trained_categorical_vgg'))
-
+# model = tf.keras.models.Sequential(model.layers[:-2])
 
 def load_image(path):
     with open(path) as f:
@@ -57,6 +57,7 @@ for chunk in tqdm(list(chunks(ids, BATCH_SIZE))):
         item = {}
         item['id'] = id
         item['cover'] = str(prediction[idx][1])
+        # item['cover'] = prediction[idx].tolist()
 
         result.append(item)
 
