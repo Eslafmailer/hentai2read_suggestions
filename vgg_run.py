@@ -13,10 +13,8 @@ RESULT_FILE = 'cover-vgg.json'
 
 model = tf.keras.models.load_model(os.path.join('.', 'trained_categorical_vgg'))
 
-def load_image(path):
-    if not os.path.isfile(path):
-        return None
 
+def load_image(path):
     with open(path) as f:
         contents = f.read()
 
@@ -27,33 +25,40 @@ def load_image(path):
     return img
 
 
+def predict(paths):
+    images = []
+    for path in paths:
+        images.append(load_image(path))
+
+    img_ds = tf.data.Dataset.from_tensor_slices(images)
+    img_ds = img_ds.batch(BATCH_SIZE)
+    img_ds = img_ds.prefetch(tf.data.AUTOTUNE)
+
+    return model.predict(img_ds, verbose=0)
+
+
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
 with open('/home/sergey/projects/scrapper/db.json') as f:
     db = json.load(f)
 
 ids = list(map(lambda x: str(x.get('id')), db.values()))
-image_paths = list(map(lambda x: os.path.join(FILES_FOLDER, x), ids))
-
-images = []
-for file in tqdm(image_paths):
-    file_name = os.path.basename(file)
-
-    image = load_image(file)
-    if image is not None:
-        images.append(image)
-
-img_ds = tf.data.Dataset.from_tensor_slices(images)
-img_ds = img_ds.batch(BATCH_SIZE)
-img_ds = img_ds.prefetch(tf.data.AUTOTUNE)
-
-prediction = model.predict(img_ds)
+ids = list(filter(lambda x: os.path.isfile(os.path.join(FILES_FOLDER, x)), ids))
 
 result = []
-for idx, id in tqdm(enumerate(ids)):
-    item = {}
-    item['id'] = id
-    item['cover'] = str(prediction[idx][0])
+for chunk in tqdm(list(chunks(ids, BATCH_SIZE))):
+    image_paths = list(map(lambda x: os.path.join(FILES_FOLDER, x), chunk))
+    prediction = predict(image_paths)
 
-    result.append(item)
+    for idx, id in enumerate(chunk):
+        item = {}
+        item['id'] = id
+        item['cover'] = str(prediction[idx][1])
+
+        result.append(item)
 
 json_object = json.dumps(result, indent=4)
 with open(RESULT_FILE, "w") as outfile:
