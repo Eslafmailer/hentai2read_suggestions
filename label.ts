@@ -2,6 +2,10 @@ import {config, db, DB_FILE_NAME, enableFavorites, loadPagedLinks, walkPagedLink
 import {printError} from "./utils";
 import {loadBook} from "./load-book";
 import {writeFileSync} from "fs";
+import * as process from "process";
+
+const args = process.argv.slice(2);
+const breakEarlier = !args.some(x => x === '--break-earlier=no');
 
 (async () => {
     await enableFavorites();
@@ -11,6 +15,8 @@ import {writeFileSync} from "fs";
         await walkPagedLinks(
             page => loadPagedLinks(page, link),
             createLabeler(true),
+            undefined,
+            breakEarlier,
         );
     }
 
@@ -19,6 +25,8 @@ import {writeFileSync} from "fs";
         await walkPagedLinks(
             page => loadPagedLinks(page, link),
             createLabeler(false),
+            undefined,
+            breakEarlier,
         );
     }
 
@@ -26,17 +34,21 @@ import {writeFileSync} from "fs";
 })().catch(printError);
 
 function createLabeler(value: boolean) {
-    return async function label(name: string) {
+    return async function label(name: string): Promise<false | undefined> {
         let book = db[name];
         if (!book) {
             book = await loadBook(name);
             if (!book) {
-                return;
+                return undefined;
             }
 
             db[name] = book;
         }
+        if(book.label === value) {
+            return false;
+        }
 
         book.label = value;
+        return undefined;
     }
 }
