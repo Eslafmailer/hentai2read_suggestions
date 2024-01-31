@@ -2,8 +2,15 @@ import {db, DB_FILE_NAME} from "./shared";
 import {readFileSync, writeFileSync} from "fs";
 import {printError} from "./utils";
 
-const EMBEDDINGS_FILE_NAME = 'SIFT.json';
-export const embeddings: Record<string, number[]> = JSON.parse(readFileSync(EMBEDDINGS_FILE_NAME, 'utf-8'));
+const FILE_NAME_ARG = '--file=';
+
+const args = process.argv.slice(2);
+const embeddingsFileName = args.find(x => x.startsWith(FILE_NAME_ARG))?.slice(FILE_NAME_ARG.length);
+if (!embeddingsFileName) {
+    throw new Error(`Missing --file parameter`);
+}
+
+export const embeddings: Record<string, number[]> = JSON.parse(readFileSync(embeddingsFileName, 'utf-8'));
 
 (async () => {
     for (const [name64, embedding] of Object.entries(embeddings)) {
