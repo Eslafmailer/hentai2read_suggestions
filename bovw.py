@@ -25,7 +25,7 @@ FILES_FOLDER = os.path.join('.', 'files')
 NUM_DESCRIPTORS_TO_TRAIN_KMEANS = 3000
 KMEANS_ITERATIONS = 1
 VOCABULARY_SIZE = args.vocabulary_size or 200
-RESULT_FILE = 'cover.json'
+RESULT_FILE = 'cover-bovw.json'
 
 algorithm = args.algorithm or 'sift'
 extractor = cv2.SIFT_create() if algorithm == 'sift' else cv2.ORB_create()
