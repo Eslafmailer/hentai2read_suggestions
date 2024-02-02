@@ -6,6 +6,9 @@ body, html {
     height: 100%; /* Set the height of the body and html to fill the screen */
 }
 
+:link { color: #0000EE; }
+:visited { color: #551A8B; }
+
 #container {
     display: flex;
     height: 100%; /* Set the height of the container to fill the screen */
@@ -64,10 +67,24 @@ body, html {
     object-fit: cover;
 }
 
-.book span {
-    margin: 10px 0;
+.book div {
+    display: flex;
+    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.book .name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.book .book-author {
+    cursor: pointer;
+    padding: 10px;
+    color: #0000EE;
+    text-decoration-line: underline;
 }
 
 .show-all {

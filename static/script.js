@@ -1,15 +1,45 @@
 const BOOKS_LIMIT = 50;
 
+// Event listeners for category and tag search inputs
+const categorySearch = document.getElementById('category-search');
+categorySearch.addEventListener('input', () => filterOptions('category-search', 'category-filters'));
+const tagSearch = document.getElementById('tag-search');
+tagSearch.addEventListener('input', () => filterOptions('tag-search', 'tag-filters'));
+
 // Function to clear author filter
 function clearAuthorFilter() {
-    document.querySelectorAll('#author-filters input[type="radio"]').forEach(radio => {
+    document.querySelectorAll('#author-filters input[type="radio"]:checked').forEach(radio => {
         radio.checked = false;
     });
-    filterBooks();
+}
+function clearFilters() {
+    document.querySelectorAll('input:checked').forEach(radio => {
+        radio.checked = false;
+    });
 }
 
 // In your existing script where you set up event listeners, add:
-document.getElementById('clear-authors').addEventListener('click', clearAuthorFilter);
+document.getElementById('clear-authors').addEventListener('click', () => {
+    clearAuthorFilter();
+    filterBooks();
+});
+
+document.addEventListener('click', ({target}) => {
+    if (target && target.className === 'book-author' && target.dataset.author) {
+        clearFilters();
+        const filter = document.getElementById(target.dataset.author);
+        filter.checked = true;
+        filter.scrollIntoView(false);
+        filterBooks();
+    }
+});
+document.addEventListener('change', ({target}) => {
+    if(target && target.tagName === 'INPUT' && (target.type === 'checkbox' || target.type === 'radio')) {
+        categorySearch.value = '';
+        tagSearch.value = '';
+        filterBooks();
+    }
+});
 
 // Function to filter options based on search input
 function filterOptions(inputId, containerId) {
@@ -32,16 +62,10 @@ function filterOptions(inputId, containerId) {
     });
 }
 
-// Event listeners for category and tag search inputs
-const categorySearch = document.getElementById('category-search');
-categorySearch.addEventListener('input', () => filterOptions('category-search', 'category-filters'));
-const tagSearch = document.getElementById('tag-search');
-tagSearch.addEventListener('input', () => filterOptions('tag-search', 'tag-filters'));
-
 // Function to create checkbox or radio button filters with count
 function createFilterWithCount(items, containerId, isRadio = false) {
     const checked = new Set([...document.querySelectorAll(`#${containerId} input:checked`)].map(x => x.id));
-    if(!isRadio) {
+    if (!isRadio) {
         items.sort((a, b) => {
             if (checked.has(a.name) && !checked.has(b.name)) {
                 return -1;
@@ -79,13 +103,6 @@ function createFilterWithCount(items, containerId, isRadio = false) {
         container.appendChild(label);
         container.appendChild(countSpan);
         container.appendChild(document.createElement('br'));
-
-        // Attach event listener to each input
-        input.addEventListener('change', () => {
-            categorySearch.value = '';
-            tagSearch.value = '';
-            filterBooks();
-        });
     });
 }
 
@@ -96,8 +113,9 @@ function createAuthors() {
             authorCounts[author] = authorCounts[author] ?? {
                 name: author,
                 count: 0,
+                total: 0,
             };
-            authorCounts[author].count = authorCounts[author].count + 1;
+            authorCounts[author].total = authorCounts[author].count = authorCounts[author].count + 1;
         });
     });
     const authors = Object.values(authorCounts);
@@ -109,7 +127,7 @@ function createAuthors() {
 
 // Function to add filters
 function addFilters(filteredBooks) {
-    for(const author of authors) {
+    for (const author of authors) {
         author.count = 0;
     }
 
@@ -129,8 +147,8 @@ function addFilters(filteredBooks) {
         });
     });
 
-    const categories = Object.entries(categoryCounts).map(([name, count]) => ({ name, count }));
-    const tags = Object.entries(tagCounts).map(([name, count]) => ({ name, count }));
+    const categories = Object.entries(categoryCounts).map(([name, count]) => ({name, count}));
+    const tags = Object.entries(tagCounts).map(([name, count]) => ({name, count}));
 
     // Creating checkbox filters with counts for categories, tags
     createFilterWithCount(categories, 'category-filters');
@@ -181,19 +199,22 @@ function displayBooks(filteredBooks, limit = BOOKS_LIMIT) {
 
     const max = Math.min(limit, filteredBooks.length);
     for (let ind = 0; ind < max; ind++) {
-        const book = filteredBooks[ind]
-        const bookElement = document.createElement('a');
-        bookElement.target = "_blank";
-        bookElement.href = book.href;
+        const book = filteredBooks[ind];
+        const author = book.authors[0];
+        const authorCount = authorCounts[author]?.total;
+        const bookElement = document.createElement('div');
         bookElement.className = 'book';
         bookElement.innerHTML = `
-            <img src="${book.coverUrl}" alt="${book.name}">
-            <span>${book.name}</span>
+            <a target="_blank" href="${book.href}"><img src="${book.coverUrl}" alt="${book.name}"></a>
+            <div>
+                <span class="name">${book.name}</span>
+                <span class="book-author" data-author="${author}">${authorCount}</span>
+            </div>
         `;
         booksContainer.appendChild(bookElement);
     }
 
-    if(filteredBooks.length > limit && filteredBooks.length < limit * 3) {
+    if (filteredBooks.length > limit && filteredBooks.length < limit * 3) {
         const bookElement = document.createElement('div');
         bookElement.className = 'book show-all';
         bookElement.innerHTML = `Show all`;
