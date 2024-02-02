@@ -38,6 +38,13 @@ document.addEventListener('change', ({target}) => {
         categorySearch.value = '';
         tagSearch.value = '';
         filterBooks();
+    } else if (target && target.tagName === 'SELECT') {
+        const queryParams = new URLSearchParams(location.search);
+        queryParams.set('sorting', target.value)
+        history.pushState({queryParams: queryParams.toString()}, '', `?${queryParams.toString()}`);
+
+        sortBooks(target.value);
+        filterBooks(false);
     }
 });
 
@@ -188,7 +195,8 @@ function filterBooks(updateUrl = true) {
 
     if (updateUrl) {
         // Constructing query string
-        const queryParams = new URLSearchParams();
+        const queryParams = new URLSearchParams(location.search);
+        queryParams.delete('selected');
         selectedCategories.forEach(category => queryParams.append('selected', category));
         selectedTags.forEach(tag => queryParams.append('selected', tag));
         selectedAuthors.forEach(author => queryParams.append('selected', author));
@@ -253,7 +261,48 @@ function initFromQueryString(queryString) {
         if (input) input.checked = true;
     });
 
+    const sorting = queryParams.get('sorting') ?? 'name';
+    document.getElementById('sorting').value = sorting;
+
+    sortBooks(sorting)
     filterBooks(false);
+}
+
+function sortBooks(term) {
+    switch (term) {
+        case 'name': {
+            books.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        }
+        case '-name': {
+            books.sort((a, b) => b.name.localeCompare(a.name));
+            break;
+        }
+        case 'pages': {
+            books.sort((a, b) => a.pages - b.pages);
+            break;
+        }
+        case '-pages': {
+            books.sort((a, b) => b.pages - a.pages);
+            break;
+        }
+        case 'score': {
+            books.sort((a, b) => a.score - b.score);
+            break;
+        }
+        case '-score': {
+            books.sort((a, b) => b.score - a.score);
+            break;
+        }
+        case 'views': {
+            books.sort((a, b) => a.views - b.views);
+            break;
+        }
+        case '-views': {
+            books.sort((a, b) => b.views - a.views);
+            break;
+        }
+    }
 }
 
 const [authorCounts, authors] = createAuthors();
