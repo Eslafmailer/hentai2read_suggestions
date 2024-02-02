@@ -34,10 +34,18 @@ document.addEventListener('click', ({target}) => {
     }
 });
 document.addEventListener('change', ({target}) => {
-    if(target && target.tagName === 'INPUT' && (target.type === 'checkbox' || target.type === 'radio')) {
+    if (target && target.tagName === 'INPUT' && (target.type === 'checkbox' || target.type === 'radio')) {
         categorySearch.value = '';
         tagSearch.value = '';
         filterBooks();
+    }
+});
+
+window.addEventListener('popstate', (event) => {
+    clearFilters();
+
+    if (event.state && event.state.queryParams) {
+        initFromQueryString(event.state.queryParams);
     }
 });
 
@@ -159,7 +167,7 @@ function addFilters(filteredBooks) {
 }
 
 // Function to filter books based on selected categories and tags
-function filterBooks() {
+function filterBooks(updateUrl = true) {
     const selectedCategories = new Set();
     const selectedTags = new Set();
     const selectedAuthors = new Set();
@@ -177,6 +185,17 @@ function filterBooks() {
     document.querySelectorAll('#author-filters input:checked').forEach(checkbox => {
         selectedAuthors.add(checkbox.value);
     });
+
+    if (updateUrl) {
+        // Constructing query string
+        const queryParams = new URLSearchParams();
+        selectedCategories.forEach(category => queryParams.append('selected', category));
+        selectedTags.forEach(tag => queryParams.append('selected', tag));
+        selectedAuthors.forEach(author => queryParams.append('selected', author));
+
+        // Update the URL with the new query string
+        history.pushState({queryParams: queryParams.toString()}, '', `?${queryParams.toString()}`);
+    }
 
     const categories = Array.from(selectedCategories);
     const tags = Array.from(selectedTags);
@@ -225,6 +244,18 @@ function displayBooks(filteredBooks, limit = BOOKS_LIMIT) {
     }
 }
 
+function initFromQueryString(queryString) {
+    const queryParams = new URLSearchParams(queryString);
+
+    // Check the boxes that match the query parameters
+    queryParams.getAll('selected').forEach(value => {
+        const input = document.getElementById(value);
+        if (input) input.checked = true;
+    });
+
+    filterBooks(false);
+}
+
 const [authorCounts, authors] = createAuthors();
-// Initial setup
-filterBooks();
+addFilters(books);
+initFromQueryString(location.search);
