@@ -19,6 +19,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "jsx": "react",
+        "ignoreDeprecations": "5.0",
 
         "module": "commonjs",
         "target": "es2020",

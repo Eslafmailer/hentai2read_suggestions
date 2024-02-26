@@ -4,18 +4,18 @@
   "dependencies": {
     "@types/axios": "0.14.0",
     "@types/circular-json": "0.4.0",
-    "@types/lodash": "4.14.191",
+    "@types/lodash": "4.14.202",
     "@types/node": "18.14.6",
-    "axios": "1.3.4",
+    "axios": "1.6.7",
     "cheerio": "1.0.0-rc.12",
     "circular-json": "0.5.9",
     "lodash": "4.17.21",
-    "moment": "2.29.4",
+    "moment": "2.30.1",
     "random-words": "1.3.0",
     "serialize-error": "8.1.0",
-    "tslib": "2.5.0",
-    "type-fest": "3.6.1",
-    "typescript": "4.9.5"
+    "tslib": "2.6.2",
+    "type-fest": "4.10.3",
+    "typescript": "5.3.3"
   },
   "scripts": {
     "scrap": "tsc && node scrap.js",
