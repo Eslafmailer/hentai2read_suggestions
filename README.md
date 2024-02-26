@@ -7,7 +7,8 @@ Create `config.json` file in the root with the following content:
 ```json
 {
   "url": "aHR0cHM6Ly9oZW50YWkycmVhZC5jb20=",
-  "cookie": "wordpress_logged_in_...=...<AUTH COOKIE FROM THE SITE>",
+  "login": "<BASE64 ENCODED LOGIN>",
+  "password": "<BASE64 ENCODED PASSWORD>",
   "all_pages": "aGVudGFpLWxpc3QvYWxsL2FueS9hbGwvbGFzdC1hZGRlZA==",
   "labels": {
     "true": [

@@ -40,7 +40,8 @@ export interface Book {
 
 export interface Config {
     url: string;
-    cookie: string;
+    login: string;
+    password: string;
     all_pages: string;
     labels: {
         true: string[];
@@ -53,8 +54,9 @@ export const CONFIG_FILE_NAME = 'config.json';
 export const config: Config = JSON.parse(readFileSync(CONFIG_FILE_NAME, 'utf-8'));
 (() => {
     assert(config.url, `url property is required in config`);
+    assert(config.login, `login property is required in config`);
+    assert(config.password, `password property is required in config`);
     assert(config.all_pages, `all_pages property is required in config`);
-    assert(config.cookie, `cookie property is required in config`);
     assert(config.input_category, `input_category property is required in config`);
     assert(config.labels, `labels property is required in config`);
     assert(config.labels.true.length, `true labels are required in config`);
@@ -62,6 +64,7 @@ export const config: Config = JSON.parse(readFileSync(CONFIG_FILE_NAME, 'utf-8')
 })();
 
 config.url = atob(config.url);
+let authCookie: string = '';
 
 export type DB = Record<string, Book>;
 export const DB_FILE_NAME = 'db.json';
@@ -116,7 +119,7 @@ export async function loadWebPage(url: string): Promise<string | undefined> {
         try {
             const {data}: AxiosResponse<string> = await axios.get(url, {
                 headers: {
-                    'Cookie': config.cookie
+                    'Cookie': authCookie
                 },
             });
             return data;
@@ -169,6 +172,31 @@ export async function walkPagedLinks(loadLinks: (page: number) => Promise<Links>
     }
 }
 
+export async function login() {
+    const response: AxiosResponse<{
+        status: number;
+    }> = await axios.post(config.url + '/login', {
+        log: atob(config.login),
+        pwd: atob(config.password),
+        testcookie: '1'
+    }, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    // @ts-ignore
+    const cookies: string[] = response.headers.get('set-cookie');
+    const cookie = cookies.find(x => x.startsWith('wordpress_logged_in_'));
+    if(!cookie) {
+        throw new Error(`Failed to login, check credentials`);
+    }
+
+    const cookieValue = cookie.split(';')[0];
+    assert(cookieValue, `can't extract login cookie value`);
+    authCookie = cookieValue;
+    console.log('Login successful');
+}
 export async function enableFavorites() {
     console.log('Enabling favorites');
 
@@ -204,7 +232,7 @@ export async function addToFavorites(id: number, kind: number): Promise<boolean>
     }, {
         headers: {
             'Content-Type': 'multipart/form-data',
-            'Cookie': config.cookie
+            'Cookie': authCookie
         },
     });
     return data.status === 1;

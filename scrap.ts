@@ -1,6 +1,6 @@
 import {writeFileSync} from "fs";
 import {printError} from "./utils";
-import {config, db, DB_FILE_NAME, enableFavorites, loadPagedLinks, walkPagedLinks} from "./shared";
+import {config, db, DB_FILE_NAME, enableFavorites, loadPagedLinks, login, walkPagedLinks} from "./shared";
 import {loadBook} from "./load-book";
 import * as process from "process";
 import moment from 'moment';
@@ -16,6 +16,7 @@ const pageStr = args.find(x => x.startsWith(PAGE_ARG))?.slice(PAGE_ARG.length);
 const page = pageStr ? Number(pageStr) : undefined;
 
 (async () => {
+    await login();
     await enableFavorites();
     await walkPagedLinks(
         page => loadPagedLinks(page, config.all_pages),

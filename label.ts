@@ -1,4 +1,4 @@
-import {config, db, DB_FILE_NAME, enableFavorites, loadPagedLinks, walkPagedLinks} from "./shared";
+import {config, db, DB_FILE_NAME, enableFavorites, loadPagedLinks, login, walkPagedLinks} from "./shared";
 import {printError} from "./utils";
 import {loadBook} from "./load-book";
 import {writeFileSync} from "fs";
@@ -8,6 +8,7 @@ const args = process.argv.slice(2);
 const breakEarlier = !args.some(x => x === '--break-earlier=no');
 
 (async () => {
+    await login();
     await enableFavorites();
 
     console.log('Loading True labels');

@@ -1,12 +1,13 @@
 import {readFileSync} from "fs";
 import {printError, promiseAll} from "./utils";
-import {addToFavorites, config, db, enableFavorites, reverseMapping} from "./shared";
+import {addToFavorites, config, db, enableFavorites, login, reverseMapping} from "./shared";
 import {loadBook} from "./load-book";
 
 export const RESULT_FILE_NAME = 'result.json';
 export const result: string[] = JSON.parse(readFileSync(RESULT_FILE_NAME, 'utf-8'));
 
 (async () => {
+    await login();
     await enableFavorites();
 
     await promiseAll(result, async name_ => {
