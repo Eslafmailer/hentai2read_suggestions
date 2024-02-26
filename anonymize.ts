@@ -14,7 +14,7 @@ export const DATA_FILE_NAME = 'data.json';
     const data: Book[] = [];
     for (const book of Object.values(db)) {
         book.name = anonymize(book.name);
-        anonymizeAll('authors', book);
+        anonymizeAll('authors', book, new Set(['unknown', '-']));
         anonymizeAll('categories', book);
         anonymizeAll('tags', book);
 
@@ -24,8 +24,8 @@ export const DATA_FILE_NAME = 'data.json';
     writeFileSync(MAPPING_FILE_NAME, JSON.stringify(mapping, null, 2));
 })().catch(printError);
 
-function anonymizeAll<K extends 'authors' | 'categories' | 'tags'>(key: K, book: Book) {
-    book[key] = book[key].map(x => anonymize(x));
+function anonymizeAll<K extends 'authors' | 'categories' | 'tags'>(key: K, book: Book, except: Set<string> = new Set<string>()) {
+    book[key] = book[key].map(x => except.has(x) ? x : anonymize(x));
 }
 
 function anonymize(value: string): string {
