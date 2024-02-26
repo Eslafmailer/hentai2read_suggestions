@@ -1,4 +1,4 @@
-import {Book, config, loadWebPage, retry} from "./shared";
+import {Book, loadWebPage, retry, URL} from "./shared";
 import {load} from "cheerio";
 import {assertError, isTruthy} from "./utils";
 import moment from 'moment';
@@ -11,7 +11,7 @@ export const FILES_FOLDER = join(__dirname, 'files');
 
 export async function loadBook(name: string): Promise<Book | undefined> {
     console.log(`Loading book ${name}`);
-    const url = config.url + `/${name}/`;
+    const url = URL + `/${name}/`;
 
     let data: string | undefined;
     try {

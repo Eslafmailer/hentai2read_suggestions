@@ -39,7 +39,6 @@ export interface Book {
 
 
 export interface Config {
-    url: string;
     login: string;
     password: string;
     all_pages: string;
@@ -50,10 +49,10 @@ export interface Config {
     input_category: number;
 }
 
+export const URL = atob('aHR0cHM6Ly9oZW50YWkycmVhZC5jb20=');
 export const CONFIG_FILE_NAME = 'config.json';
 export const config: Config = JSON.parse(readFileSync(CONFIG_FILE_NAME, 'utf-8'));
 (() => {
-    assert(config.url, `url property is required in config`);
     assert(config.login, `login property is required in config`);
     assert(config.password, `password property is required in config`);
     assert(config.all_pages, `all_pages property is required in config`);
@@ -63,7 +62,6 @@ export const config: Config = JSON.parse(readFileSync(CONFIG_FILE_NAME, 'utf-8')
     assert(config.labels.false.length, `false labels are required in config`);
 })();
 
-config.url = atob(config.url);
 let authCookie: string = '';
 
 export type DB = Record<string, Book>;
@@ -86,7 +84,7 @@ export async function loadPagedLinks(page: number, path: string, retryAttempts?:
     return await retry(async () => {
         console.log(`Loading page ${page}`);
         const PAGE_SIZE = 48;
-        const url = config.url + `/${atob(path)}/${page}/`;
+        const url = URL + `/${atob(path)}/${page}/`;
         const data = await loadWebPage(url);
         if (!data) {
             throw new Error(`Can't load page links: ${url}`);
@@ -108,7 +106,7 @@ export async function loadPagedLinks(page: number, path: string, retryAttempts?:
         }
 
         return {
-            names: links.map(link => link.replace(config.url + '/', '').replace(/\/$/, '')),
+            names: links.map(link => link.replace(URL + '/', '').replace(/\/$/, '')),
             last: lastPage,
         };
     }, retryAttempts);
@@ -175,7 +173,7 @@ export async function walkPagedLinks(loadLinks: (page: number) => Promise<Links>
 export async function login() {
     const response: AxiosResponse<{
         status: number;
-    }> = await axios.post(config.url + '/login', {
+    }> = await axios.post(URL + '/login', {
         log: atob(config.login),
         pwd: atob(config.password),
         testcookie: '1'
@@ -224,7 +222,7 @@ export async function enableFavorites() {
 export async function addToFavorites(id: number, kind: number): Promise<boolean> {
     const {data}: AxiosResponse<{
         status: number;
-    }> = await axios.post(config.url + '/api', {
+    }> = await axios.post(URL + '/api', {
         controller: "manga",
         action: "bookmark",
         mid: id,

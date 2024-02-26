@@ -1,5 +1,5 @@
 import {join} from 'path';
-import {Book, config, db} from "./shared";
+import {Book, db, URL} from "./shared";
 import {printError} from "./utils";
 import {writeFileSync} from "fs";
 
@@ -19,7 +19,7 @@ interface BookEx extends Book {
         }
         data.push({
             ...book,
-            href: `${config.url}/${book.name}/`,
+            href: `${URL}/${book.name}/`,
             coverUrl: `images/${book.id}.jpg`,
         });
     }
