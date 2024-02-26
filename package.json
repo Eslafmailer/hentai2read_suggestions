@@ -6,6 +6,7 @@
     "@types/circular-json": "0.4.0",
     "@types/lodash": "4.14.202",
     "@types/node": "18.14.6",
+    "@types/sharp": "0.32.0",
     "axios": "1.6.7",
     "cheerio": "1.0.0-rc.12",
     "circular-json": "0.5.9",
@@ -13,6 +14,9 @@
     "moment": "2.30.1",
     "random-words": "1.3.0",
     "serialize-error": "8.1.0",
+    "sharp": "0.33.2",
+    "surge": "0.23.1",
+    "tqdm": "2.0.3",
     "tslib": "2.6.2",
     "type-fest": "4.10.3",
     "typescript": "5.3.3"
@@ -38,7 +42,7 @@
     "accept": "tsc && node accept.js",
     "validate": "tsc && node validate.js",
 
-    "static:images": "tsc && node label-images.js && mv images/true/ static/images/ && rm -rf images",
+    "static:images": "tsc && node label-images.js && rm -rf static/images && mkdir static/images && node resize.js && rm -rf images",
     "static:script": "tsc && node static.js",
     "static:publish": "surge ./static && rm -rf static/images && rm -rf static/books.js"
   }

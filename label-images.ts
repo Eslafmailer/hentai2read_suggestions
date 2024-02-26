@@ -2,6 +2,7 @@ import {join} from 'path';
 import {db} from "./shared";
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from "fs";
 import {FILES_FOLDER} from "./load-book";
+import tqdm from "tqdm";
 
 const IMAGES_FOLDER = join(__dirname, 'images');
 const TRUE_FOLDER = join(IMAGES_FOLDER, 'true');
@@ -17,7 +18,7 @@ if (!existsSync(FALSE_FOLDER)) {
     mkdirSync(FALSE_FOLDER);
 }
 
-for (const book of Object.values(db)) {
+for (const book of tqdm(Object.values(db))) {
     if (book.label == undefined) {
         continue;
     }

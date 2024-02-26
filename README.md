@@ -37,7 +37,7 @@ Where categories as following:
 
 #### JS
 
-* Install [node 18+](https://nodejs.org/en/download/package-manager/)
+* Install node 18+ [directly](https://nodejs.org/en/download/package-manager/) or with [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file)
 * Run `npm install` to install the dependencies
 
 ### Scraping
