@@ -43,9 +43,11 @@ Where categories as following:
 
 ### Scraping
 
-Run `npm run scrap` to scrap all the books into `db.json`. If you already scraped once and only need to update the recent books, pass `--update-months` argument, e.g. `npm run scrap -- --update-months=6.
+Run `npm run scrap` to scrap the books into `db.json`. On the first run the command will scrap all the books, on subsequent runs - only new books. You can change this behavior with the next arguments:
+* pass `--update-all=true` to trigger the full update.
+* pass `--update-months=N` to scrap the new books and the books updated in the N months. You may want to use this, because the statistics (views, score, etc.) of the new books do not stay the same for long.
 
-Next run `npm run label` to update the label information.
+Next run `npm run label` to update the label information. Again, on subsequent runs it updates only the newly labeled books, unless the `--update-all=true` argument is passed.
 
 Finally, run `npm run anonymize` to prepare `data.json`, file with replaced real text, so it can be made publicly available.
 

@@ -5,7 +5,7 @@ import {writeFileSync} from "fs";
 import * as process from "process";
 
 const args = process.argv.slice(2);
-const breakEarlier = !args.some(x => x === '--break-earlier=no');
+const updateAll = args.some(x => x === '--update-all=true');
 
 (async () => {
     await login();
@@ -16,8 +16,6 @@ const breakEarlier = !args.some(x => x === '--break-earlier=no');
         await walkPagedLinks(
             page => loadPagedLinks(page, link),
             createLabeler(true),
-            undefined,
-            breakEarlier,
         );
     }
 
@@ -26,8 +24,6 @@ const breakEarlier = !args.some(x => x === '--break-earlier=no');
         await walkPagedLinks(
             page => loadPagedLinks(page, link),
             createLabeler(false),
-            undefined,
-            breakEarlier,
         );
     }
 
@@ -45,7 +41,7 @@ function createLabeler(value: boolean) {
 
             db[name] = book;
         }
-        if(book.label === value) {
+        if(book.label === value && !updateAll) {
             return false;
         }
 

@@ -156,11 +156,11 @@ function delay(seconds: number): Promise<void> {
     });
 }
 
-export async function walkPagedLinks(loadLinks: (page: number) => Promise<Links>, onLink: (name: string) => Promise<boolean | void>, onPage?: () => Promise<void>, breakEarlier?: boolean, page = 1) {
+export async function walkPagedLinks(loadLinks: (page: number) => Promise<Links>, onLink: (name: string) => Promise<boolean | void>, onPage?: () => Promise<void>, page = 1) {
     while (true) {
         const {names, last} = await loadLinks(page++);
         const results = await promiseAll(names, onLink);
-        if (results.length && results.every(x => x === false) && breakEarlier) {
+        if (results.length && results.every(x => x === false)) {
             console.log('breaking out of walkPagedLinks')
             break;
         }
