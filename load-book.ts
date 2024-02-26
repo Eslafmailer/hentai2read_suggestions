@@ -186,9 +186,14 @@ export async function loadBook(name: string): Promise<Book | undefined> {
     }
 
     async function getCover(): Promise<string | undefined> {
-        const src = $('img.img-responsive').attr('src');
-        if (!src) {
+        const dataSrc = $('img.img-responsive').attr('data-src');
+        if (!dataSrc) {
             throw new Error(`image not found for ${url}`);
+        }
+        const result = /(https.*)/.exec(dataSrc);
+        const src = result?.[1];
+        if (!src) {
+            throw new Error(`can't parse image url for ${url}: ${dataSrc}`);
         }
 
         return retry(async () => {
