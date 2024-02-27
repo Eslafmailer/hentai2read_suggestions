@@ -8,7 +8,6 @@ const BOOKS_FILE_NAME = join(IMAGES_FOLDER, 'books.js');
 
 interface BookEx extends Book {
     href: string;
-    coverUrl: string;
 }
 
 (async () => {
@@ -20,7 +19,6 @@ interface BookEx extends Book {
         data.push({
             ...book,
             href: `${URL}/${book.name}/`,
-            coverUrl: `images/${book.id}.jpg`,
         });
     }
     writeFileSync(BOOKS_FILE_NAME, `var books = ${JSON.stringify(data, null, 2)};`);

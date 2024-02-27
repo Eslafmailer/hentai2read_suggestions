@@ -10,11 +10,12 @@
     "axios": "1.6.7",
     "cheerio": "1.0.0-rc.12",
     "circular-json": "0.5.9",
+    "join-images": "1.1.5",
     "lodash": "4.17.21",
     "moment": "2.30.1",
     "random-words": "1.3.0",
     "serialize-error": "8.1.0",
-    "sharp": "0.33.2",
+    "sharp": "0.32.6",
     "surge": "0.23.1",
     "tqdm": "2.0.3",
     "tslib": "2.6.2",
@@ -44,6 +45,6 @@
 
     "static:images": "tsc && node label-images.js && rm -rf static/images && mkdir static/images && node resize.js && rm -rf images",
     "static:script": "tsc && node static.js",
-    "static:publish": "surge ./static && rm -rf static/images && rm -rf static/books.js"
+    "static:publish": "surge ./static && rm -rf static/images && rm -rf static/books.js && rm -rf static/images.js"
   }
 }

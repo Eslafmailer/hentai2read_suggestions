@@ -230,9 +230,11 @@ function displayBooks(filteredBooks, limit = BOOKS_LIMIT) {
         const author = book.authors[0];
         const authorCount = authorCounts[author]?.total;
         const bookElement = document.createElement('div');
+        const coverUrl = `images/${images[book.id]?.image}`;
+        const offset = images[book.id]?.index * 200;
         bookElement.className = 'book';
         bookElement.innerHTML = `
-            <a target="_blank" href="${book.href}"><img src="${book.coverUrl}" alt="${book.name}"></a>
+            <a target="_blank" href="${book.href}"><img src="${coverUrl}" alt="${book.name}" style="object-fit: none; object-position: 0 -${offset}px; width: 200px; height: 200px"></a>
             <div>
                 <span class="name">${book.name}</span>
                 <span class="book-author" data-author="${author}">${authorCount}</span>
