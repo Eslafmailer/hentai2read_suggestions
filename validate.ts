@@ -9,7 +9,7 @@ for (const file of files) {
 
     const result: string[] = JSON.parse(readFileSync(file, 'utf-8'));
 
-    let unknown = 0;
+    let unknown: string[] = [];
     let tp = 0;
     let fp = 0;
     for (const name of result) {
@@ -26,7 +26,7 @@ for (const file of files) {
         }
 
         if (book.label == null) {
-            unknown++;
+            unknown.push(realName);
         } else if (book.label) {
             tp++;
         } else {
@@ -34,5 +34,8 @@ for (const file of files) {
         }
     }
 
-    console.log(file, '\t', `tp: ${tp}, fp: ${fp}, unk: ${unknown}`);
+    console.log(file, '\t', `tp: ${tp}, fp: ${fp}, unk: ${unknown.length}`);
+    if (unknown.length) {
+        console.log(`\t${unknown.join('\n\t')}`);
+    }
 }
