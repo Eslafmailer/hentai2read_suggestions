@@ -201,7 +201,7 @@ export async function enableFavorites() {
     const url = config.labels.true[0];
     assert(url);
 
-    const page = await loadPagedLinks(1, url, 1);
+    const page = await loadPagedLinks(1, url);
     const name = page.names[0];
     assert(name);
 
