@@ -10,7 +10,6 @@ import {existsSync, promises} from "fs";
 export const FILES_FOLDER = join(__dirname, 'files');
 
 export async function loadBook(name: string): Promise<Book | undefined> {
-    console.log(`Loading book ${name}`);
     const url = URL + `/${name}/`;
 
     let data: string | undefined;
