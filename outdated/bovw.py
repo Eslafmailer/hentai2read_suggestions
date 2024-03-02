@@ -7,7 +7,6 @@ import base64
 import os
 import cv2
 import matplotlib.pyplot as plt
-import functools
 from scipy.cluster.vq import kmeans
 from scipy.cluster.vq import vq
 import sys
@@ -21,7 +20,7 @@ parser.add_argument('--vocabulary_size', type=int)
 parser.add_argument('--algorithm', type=ascii)
 args = parser.parse_args()
 
-FILES_FOLDER = os.path.join('.', 'files')
+FILES_FOLDER = os.path.join('..', 'files')
 NUM_DESCRIPTORS_TO_TRAIN_KMEANS = 3000
 KMEANS_ITERATIONS = 1
 VOCABULARY_SIZE = args.vocabulary_size or 200

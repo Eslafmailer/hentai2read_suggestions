@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(prog='CNN')
 parser.add_argument('--model', type=ascii)
 args = parser.parse_args()
 
-FILES_FOLDER = os.path.join('.', 'files')
+FILES_FOLDER = os.path.join('..', 'files')
 RESULT_FILE = 'cover-cnn.json'
 
 files = [os.path.join(FILES_FOLDER, f) for f in os.listdir(FILES_FOLDER) if os.path.isfile(os.path.join(FILES_FOLDER, f))]

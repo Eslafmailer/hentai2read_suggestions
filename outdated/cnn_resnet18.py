@@ -1,7 +1,6 @@
 # https://becominghuman.ai/extract-a-feature-vector-for-any-image-with-pytorch-9717561d1d4c
 
 import torch
-import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 from torch.autograd import Variable
@@ -14,7 +13,7 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-FILES_FOLDER = os.path.join('.', 'files')
+FILES_FOLDER = os.path.join('..', 'files')
 RESULT_FILE = 'cover-cnn.json'
 
 files = [os.path.join(FILES_FOLDER, f) for f in os.listdir(FILES_FOLDER) if os.path.isfile(os.path.join(FILES_FOLDER, f))]

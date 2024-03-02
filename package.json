@@ -27,13 +27,6 @@
     "scrap:debug": "tsc && node --inspect-brk scrap.js",
     "label": "tsc && node label.js",
 
-    "embedd:bovw": "poetry run python bovw.py",
-    "add-cover": "tsc && node add-cover.js",
-
-    "embedd:cnn:resnet18": "poetry run python cnn_resnet18.py",
-    "embedd:cnn:densenet": "poetry run python cnn.py --model 'densenet'",
-    "embedd:cnn:efficientnet": "poetry run python cnn.py --model 'efficientnet_b7'",
-
     "embedd:cnn:custom:prepare": "tsc && node label-images.js",
     "embedd:cnn:custom:train": "poetry run python vgg_train.py",
     "postembedd:cnn:custom:train": "rm -rf images",

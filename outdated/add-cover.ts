@@ -1,6 +1,6 @@
-import {db, DB_FILE_NAME} from "./shared";
+import {db, DB_FILE_NAME} from "../shared";
 import {readFileSync, writeFileSync} from "fs";
-import {printError} from "./utils";
+import {printError} from "../utils";
 
 const FILE_NAME_ARG = '--file=';
 
