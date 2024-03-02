@@ -30,6 +30,7 @@ const page = pageStr ? Number(pageStr) : undefined;
 
             const book = await loadBook(name);
             if (book) {
+                book.label = existingBook?.label;
                 db[name] = book;
             }
 
