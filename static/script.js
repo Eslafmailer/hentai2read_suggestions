@@ -304,6 +304,14 @@ function sortBooks(term) {
             books.sort((a, b) => b.views - a.views);
             break;
         }
+        case 'coverScore': {
+            books.sort((a, b) => a.coverScore - b.coverScore);
+            break;
+        }
+        case '-coverScore': {
+            books.sort((a, b) => b.coverScore - a.coverScore);
+            break;
+        }
     }
 }
 
