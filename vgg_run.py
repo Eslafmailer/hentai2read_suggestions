@@ -45,9 +45,9 @@ def chunks(lst, n):
 with open('/home/sergey/projects/scrapper/db.json') as f:
     db = json.load(f)
 
-ids = list(map(lambda x: str(x.get('id')), db.values()))
+ids = list(map(lambda x: x.get('id'), db.values()))
 print('all entries', len(ids))
-ids = list(filter(lambda x: os.path.isfile(os.path.join(FILES_FOLDER, x)), ids))
+ids = list(filter(lambda x: os.path.isfile(os.path.join(FILES_FOLDER, str(x))), ids))
 print('entries with image', len(ids))
 
 result = []
@@ -65,14 +65,13 @@ for chunk in tqdm(list(chunks(ids, BATCH_SIZE))):
     if not len(chunk):
         continue
 
-    image_paths = list(map(lambda x: os.path.join(FILES_FOLDER, x), chunk))
+    image_paths = list(map(lambda x: os.path.join(FILES_FOLDER, str(x)), chunk))
     prediction = predict(image_paths)
 
     for idx, id in enumerate(chunk):
         item = {}
         item['id'] = id
-        item['cover'] = str(prediction[idx][1])
-        # item['cover'] = prediction[idx].tolist()
+        item['cover'] = float(prediction[idx][1])
 
         result.append(item)
 
