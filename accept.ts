@@ -10,6 +10,8 @@ export const result: string[] = JSON.parse(readFileSync(RESULT_FILE_NAME, 'utf-8
     await login();
     await enableFavorites();
 
+    console.log(`Accepting`);
+    let labeled = 0;
     await promiseAll(result, async name_ => {
         const name = reverseMapping[name_];
         if (!name) {
@@ -19,7 +21,7 @@ export const result: string[] = JSON.parse(readFileSync(RESULT_FILE_NAME, 'utf-8
 
         const existingBook = db[name];
         if (existingBook?.label !== undefined) {
-            console.warn(`Already marked: ${name}`);
+            labeled++;
             return;
         }
 
@@ -31,4 +33,7 @@ export const result: string[] = JSON.parse(readFileSync(RESULT_FILE_NAME, 'utf-8
 
         await addToFavorites(book.id, config.input_category);
     });
+    if(labeled) {
+        console.log(`${labeled} ignored as already labeled`);
+    }
 })().catch(printError);
