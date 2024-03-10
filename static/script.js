@@ -1,12 +1,10 @@
 const BOOKS_LIMIT = 50;
 
-// Event listeners for category and tag search inputs
 const categorySearch = document.getElementById('category-search');
 categorySearch.addEventListener('input', () => filterOptions('category-search', 'category-filters'));
 const tagSearch = document.getElementById('tag-search');
 tagSearch.addEventListener('input', () => filterOptions('tag-search', 'tag-filters'));
 
-// Function to clear author filter
 function clearAuthorFilter() {
     document.querySelectorAll('#author-filters input[type="radio"]:checked').forEach(radio => {
         radio.checked = false;
@@ -18,7 +16,6 @@ function clearFilters() {
     });
 }
 
-// In your existing script where you set up event listeners, add:
 document.getElementById('clear-authors').addEventListener('click', () => {
     clearAuthorFilter();
     filterBooks();
@@ -80,7 +77,11 @@ function filterOptions(inputId, containerId) {
 // Function to create checkbox or radio button filters with count
 function createFilterWithCount(items, containerId, isRadio = false) {
     const checked = new Set([...document.querySelectorAll(`#${containerId} input:checked`)].map(x => x.id));
-    if (!isRadio) {
+    if (isRadio) {
+        items.sort((a, b) => {
+            return b.count - a.count;
+        });
+    } else {
         items.sort((a, b) => {
             if (checked.has(a.name) && !checked.has(b.name)) {
                 return -1;
@@ -91,7 +92,6 @@ function createFilterWithCount(items, containerId, isRadio = false) {
             }
         });
     }
-
 
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear existing content
@@ -116,9 +116,13 @@ function createFilterWithCount(items, containerId, isRadio = false) {
 
         container.appendChild(input);
         container.appendChild(label);
-        container.appendChild(countSpan);
+        label.appendChild(countSpan);
         container.appendChild(document.createElement('br'));
     });
+
+    if(isRadio) {
+        document.querySelector(`#${containerId} input:checked`)?.scrollIntoView();
+    }
 }
 
 function createAuthors() {
@@ -141,7 +145,7 @@ function createAuthors() {
 }
 
 // Function to add filters
-function addFilters(filteredBooks) {
+function addFilters(filteredBooks, filterBooksWithoutAuthor) {
     for (const author of authors) {
         author.count = 0;
     }
@@ -157,6 +161,8 @@ function addFilters(filteredBooks) {
         book.tags.forEach(tag => {
             tagCounts[tag] = (tagCounts[tag] || 0) + 1;
         });
+    });
+    filterBooksWithoutAuthor.forEach(book => {
         book.authors.forEach(author => {
             authorCounts[author].count = authorCounts[author].count + 1;
         });
@@ -208,15 +214,17 @@ function filterBooks(updateUrl = true) {
     const categories = Array.from(selectedCategories);
     const tags = Array.from(selectedTags);
     const authors = Array.from(selectedAuthors);
-    const filteredBooks = books.filter(book => {
+    const filterBooksWithoutAuthor = (categories.length || tags.length) ? books.filter(book => {
         const categoryMatch = categories.length === 0 || categories.every(category => book.categories.includes(category));
         const tagMatch = tags.length === 0 || tags.every(tag => book.tags.includes(tag));
-        const authorMatch = authors.length === 0 || authors.every(author => book.authors.includes(author));
-        return categoryMatch && tagMatch && authorMatch;
-    });
+        return categoryMatch && tagMatch;
+    }) : books;
+    const filteredBooks = (authors.length) ? filterBooksWithoutAuthor.filter(book => {
+        return  authors.length === 0 || authors.every(author => book.authors.includes(author));
+    }) : filterBooksWithoutAuthor;
 
     displayBooks(filteredBooks);
-    addFilters(filteredBooks);
+    addFilters(filteredBooks, filterBooksWithoutAuthor);
 }
 
 // Modified displayBooks function to accept an array of books
@@ -316,5 +324,5 @@ function sortBooks(term) {
 }
 
 const [authorCounts, authors] = createAuthors();
-addFilters(books);
+addFilters(books, books);
 initFromQueryString(location.search);
