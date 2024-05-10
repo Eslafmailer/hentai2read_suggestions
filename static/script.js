@@ -252,34 +252,41 @@ function displayBooks(filteredBooks, limit = BOOKS_LIMIT) {
     const booksContainer = document.getElementById('books');
     booksContainer.innerHTML = '';
 
-    const max = Math.min(limit, filteredBooks.length);
-    for (let ind = 0; ind < max; ind++) {
-        const book = filteredBooks[ind];
-        const author = book.authors[0];
-        const authorCount = authorCounts[author]?.total;
-        const bookElement = document.createElement('div');
-        const coverUrl = `images/${images[book.id]?.image}`;
-        const offset = images[book.id]?.index * 200;
-        bookElement.className = 'book';
-        bookElement.innerHTML = `
+    let shown = 0;
+    function showNext() {
+        const from = shown;
+        shown = Math.min(filteredBooks.length, shown + limit);
+
+        for (let ind = from; ind < shown; ind++) {
+            const book = filteredBooks[ind];
+            const author = book.authors[0];
+            const authorCount = authorCounts[author]?.total;
+            const bookElement = document.createElement('div');
+            const coverUrl = `images/${images[book.id]?.image}`;
+            const offset = images[book.id]?.index * 200;
+            bookElement.className = 'book';
+            bookElement.innerHTML = `
             <a target="_blank" href="${book.href}"><img src="${coverUrl}" alt="${book.name}" style="object-fit: none; object-position: 0 -${offset}px; width: 200px; height: 200px"></a>
             <div>
                 <span class="name">${book.name}</span>
                 <span class="book-author" data-author="${author}">${authorCount}</span>
             </div>
         `;
-        booksContainer.appendChild(bookElement);
-    }
+            booksContainer.appendChild(bookElement);
+        }
 
-    if (filteredBooks.length > limit && filteredBooks.length < limit * 3) {
-        const bookElement = document.createElement('div');
-        bookElement.className = 'book show-all';
-        bookElement.innerHTML = `Show all`;
-        bookElement.addEventListener('click', () => {
-            displayBooks(filteredBooks, Number.POSITIVE_INFINITY);
-        });
-        booksContainer.appendChild(bookElement);
+        if (shown !== filteredBooks.length) {
+            const bookElement = document.createElement('div');
+            bookElement.className = 'book show-more';
+            bookElement.innerHTML = `Show more`;
+            bookElement.addEventListener('click', () => {
+                bookElement.remove();
+                showNext();
+            });
+            booksContainer.appendChild(bookElement);
+        }
     }
+    showNext();
 }
 
 function initFromQueryString(queryString) {
