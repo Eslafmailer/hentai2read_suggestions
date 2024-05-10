@@ -114,6 +114,10 @@ body, html {
     #filters {
         width: 300px;
     }
+    #randomBooks {
+        font-size: 20px;
+        left: 328px;
+    }
     input[type="text"] {
         height: 26px;
     }
