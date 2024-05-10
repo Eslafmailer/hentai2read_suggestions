@@ -11,8 +11,8 @@ function clearAuthorFilter() {
     });
 }
 function clearFilters() {
-    document.querySelectorAll('input:checked').forEach(radio => {
-        radio.checked = false;
+    document.querySelectorAll('input:checked').forEach(input => {
+        input.checked = false;
     });
 }
 
