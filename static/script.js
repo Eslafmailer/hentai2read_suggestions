@@ -53,6 +53,11 @@ window.addEventListener('popstate', (event) => {
     }
 });
 
+const randomBooksButton = document.getElementById('randomBooks');
+randomBooksButton.addEventListener('click', function() {
+    filterBooks(false, true);
+});
+
 // Function to filter options based on search input
 function filterOptions(inputId, containerId) {
     const searchText = document.getElementById(inputId).value.toLowerCase();
@@ -180,7 +185,7 @@ function addFilters(filteredBooks, filterBooksWithoutAuthor) {
 }
 
 // Function to filter books based on selected categories and tags
-function filterBooks(updateUrl = true) {
+function filterBooks(updateUrl = true, randomize = false) {
     const selectedCategories = new Set();
     const selectedTags = new Set();
     const selectedAuthors = new Set();
@@ -223,8 +228,23 @@ function filterBooks(updateUrl = true) {
         return  authors.length === 0 || authors.every(author => book.authors.includes(author));
     }) : filterBooksWithoutAuthor;
 
-    displayBooks(filteredBooks);
+    displayBooks(randomize ? random(filteredBooks) : filteredBooks);
     addFilters(filteredBooks, filterBooksWithoutAuthor);
+
+    randomBooksButton.disabled = filteredBooks.length <= BOOKS_LIMIT;
+}
+function random(filteredBooks, limit = BOOKS_LIMIT) {
+    if (filteredBooks.length <= limit) {
+        return filteredBooks;
+    }
+
+    const set = new Set();
+    while(set.size < limit) {
+        console.count('while');
+        set.add(Math.floor(Math.random() * filteredBooks.length));
+    }
+
+    return [...set].map(x => filteredBooks[x]);
 }
 
 // Modified displayBooks function to accept an array of books

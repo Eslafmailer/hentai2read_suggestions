@@ -7,6 +7,7 @@
 </head>
 <body>
 <div id="container">
+    <button id="randomBooks">Randomize</button>
     <div class="sorting">
         <label for="sorting">Sorting:</label>
         <select id="sorting">
@@ -24,7 +25,7 @@
     </div>
     <div id="filters">
         <div class="filter-section" id="category-filters-section">
-            <strong>Categories</strong>
+            <label for="category-search"><strong>Categories</strong></label>
             <input type="text" id="category-search" placeholder="Search categories...">
             <div class="scrollable-filter-container" id="category-filters">
                 <!-- Category checkboxes will be added here -->
@@ -32,7 +33,7 @@
         </div>
 
         <div class="filter-section" id="tag-filters-section">
-            <strong>Tags</strong>
+            <label for="tag-search"><strong>Tags</strong></label>
             <input type="text" id="tag-search" placeholder="Search tags...">
             <div class="scrollable-filter-container" id="tag-filters">
                 <!-- Tag checkboxes will be added here -->
