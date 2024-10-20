@@ -26,6 +26,7 @@
     "scrap": "tsc && node scrap.js",
     "scrap:debug": "tsc && node --inspect-brk scrap.js",
     "label": "tsc && node label.js",
+    "labe:all": "tsc && node label.js --update-all=true",
 
     "embedd:cnn:custom:prepare": "tsc && node label-images.js",
     "embedd:cnn:custom:train": "poetry run python vgg_train.py",
