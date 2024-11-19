@@ -262,22 +262,41 @@ function displayBooks(filteredBooks, limit = BOOKS_LIMIT) {
             const author = book.authors[0];
             const authorCount = authorCounts[author]?.total;
             const bookElement = document.createElement('div');
-            const coverUrl = `images/${images[book.id]?.image}`;
             const offset = images[book.id]?.index * 200;
             bookElement.className = 'book';
-            bookElement.innerHTML = `
-            <a target="_blank" href="${book.href}"><img src="${coverUrl}" alt="${book.name}" style="object-fit: none; object-position: 0 -${offset}px; width: 200px; height: 200px"></a>
-            <div>
+
+            const link = document.createElement('a');
+            link.href = `${book.href}1`;
+            link.target = '_blank';
+            const image = document.createElement('img');
+            image.src = `images/${images[book.id]?.image}`;
+            image.alt = book.name;
+            image.style.objectPosition = `0 -${offset}px`;
+            link.appendChild(image);
+            bookElement.appendChild(link);
+
+            const description = document.createElement('div');
+            description.innerHTML = `
                 <span class="name">${book.name}</span>
                 <span class="book-author" data-author="${author}">${authorCount}</span>
-            </div>
         `;
+            bookElement.appendChild(description);
+
+            Promise.race([
+                new Promise((resolve) => {
+                    image.addEventListener('load', resolve);
+                }),
+                new Promise((resolve) => setTimeout(resolve, 1000)),
+            ]).then(() => {
+                bookElement.className += ' shown';
+            });
+
             booksContainer.appendChild(bookElement);
         }
 
         if (shown !== filteredBooks.length) {
             const bookElement = document.createElement('div');
-            bookElement.className = 'book show-more';
+            bookElement.className = 'book shown show-more';
             bookElement.innerHTML = `Show more`;
             bookElement.addEventListener('click', () => {
                 bookElement.remove();

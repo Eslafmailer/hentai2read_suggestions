@@ -76,11 +76,18 @@ body, html {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+.book.shown {
+    opacity: 1;
 }
 
 .book img {
     max-width: 100%;
-    object-fit: cover;
+    object-fit: none;
+    width: 200px;
+    height: 200px;
 }
 
 .book div {
