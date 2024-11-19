@@ -323,7 +323,7 @@ function displayBooks(filteredBooks, limit = BOOKS_LIMIT) {
                 new Promise((resolve) => {
                     image.addEventListener('load', resolve);
                 }),
-                new Promise((resolve) => setTimeout(resolve, 1000)),
+                new Promise((resolve) => setTimeout(resolve, 5000)),
             ]).then(() => {
                 bookElement.className += ' shown';
             });
