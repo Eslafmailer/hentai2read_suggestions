@@ -34,6 +34,9 @@ document.addEventListener('change', ({target}) => {
     if (target && target.tagName === 'INPUT' && (target.type === 'checkbox' || target.type === 'radio')) {
         categorySearch.value = '';
         tagSearch.value = '';
+        if (target.type === 'checkbox') {
+            updateCheckboxState(target);
+        }
         filterBooks();
     } else if (target && target.tagName === 'SELECT') {
         const queryParams = new URLSearchParams(location.search);
@@ -44,6 +47,27 @@ document.addEventListener('change', ({target}) => {
         filterBooks(false);
     }
 });
+function updateCheckboxState(checkbox) {
+    switch(checkbox.state) {
+        case 'checked':
+            checkbox.checked = true;
+            checkbox.indeterminate = true;
+            checkbox.state = 'indeterminate';
+            break;
+
+        case 'indeterminate':
+            checkbox.checked = false;
+            checkbox.indeterminate = false;
+            checkbox.state = 'unchecked';
+            break;
+
+        case 'unchecked':
+            checkbox.checked = true;
+            checkbox.indeterminate = false;
+            checkbox.state = 'checked';
+            break;
+    }
+}
 
 window.addEventListener('popstate', (event) => {
     clearFilters();
@@ -82,15 +106,19 @@ function filterOptions(inputId, containerId) {
 // Function to create checkbox or radio button filters with count
 function createFilterWithCount(items, containerId, isRadio = false) {
     const checked = new Set([...document.querySelectorAll(`#${containerId} input:checked`)].map(x => x.id));
+    const indeterminated = new Set(isRadio ? [] : [...document.querySelectorAll(`#${containerId} input:indeterminate`)].map(x => x.id));
+
     if (isRadio) {
         items.sort((a, b) => {
             return b.count - a.count;
         });
     } else {
         items.sort((a, b) => {
-            if (checked.has(a.name) && !checked.has(b.name)) {
+            const markedA = checked.has(a.name) || indeterminated.has(a.name);
+            const markedB = checked.has(b.name) || indeterminated.has(b.name);
+            if (markedA && !markedB) {
                 return -1;
-            } else if (!checked.has(a.name) && checked.has(b.name)) {
+            } else if (!markedA && markedB) {
                 return 1;
             } else {
                 return b.count - a.count;
@@ -108,6 +136,8 @@ function createFilterWithCount(items, containerId, isRadio = false) {
         input.name = isRadio ? 'author-filter' : name; // Radio buttons need the same 'name' attribute
         input.value = name;
         input.checked = checked.has(name);
+        input.indeterminate = indeterminated.has(name);
+        input.state = input.indeterminate ? 'indeterminate' : input.checked ? 'checked' : 'unchecked';
 
         const label = document.createElement('label');
         label.htmlFor = name;
@@ -117,7 +147,7 @@ function createFilterWithCount(items, containerId, isRadio = false) {
         const countSpan = document.createElement('span');
         countSpan.id = `count-${containerId}-${name}`;
         countSpan.style.marginLeft = '5px';
-        countSpan.textContent = count;
+        countSpan.textContent = count || '';
 
         container.appendChild(input);
         container.appendChild(label);
@@ -155,8 +185,14 @@ function addFilters(filteredBooks, filterBooksWithoutAuthor) {
         author.count = 0;
     }
 
-    const categoryCounts = {};
-    const tagCounts = {};
+    const categoryCounts = [...document.querySelectorAll(`#category-filters input:indeterminate`)].reduce((acc, val) => {
+        acc[val.id] = 0;
+        return acc;
+    }, {});
+    const tagCounts = [...document.querySelectorAll(`#tag-filters input:indeterminate`)].reduce((acc, val) => {
+        acc[val.id] = 0;
+        return acc;
+    }, {});
 
     // Extracting unique categories, tags, and authors
     filteredBooks.forEach(book => {
@@ -189,28 +225,25 @@ function filterBooks(updateUrl = true, randomize = false) {
     const selectedCategories = new Set();
     const selectedTags = new Set();
     const selectedAuthors = new Set();
+    const deselectedCategories = new Set();
+    const deselectedTags = new Set();
 
-    // Collecting selected categories
-    document.querySelectorAll('#category-filters input:checked').forEach(checkbox => {
-        selectedCategories.add(checkbox.value);
-    });
-
-    // Collecting selected tags
-    document.querySelectorAll('#tag-filters input:checked').forEach(checkbox => {
-        selectedTags.add(checkbox.value);
-    });
-
-    document.querySelectorAll('#author-filters input:checked').forEach(checkbox => {
-        selectedAuthors.add(checkbox.value);
-    });
+    document.querySelectorAll('#category-filters input:checked:not(:indeterminate)').forEach(x => selectedCategories.add(x.value));
+    document.querySelectorAll('#tag-filters input:checked:not(:indeterminate)').forEach(x => selectedTags.add(x.value));
+    document.querySelectorAll('#author-filters input:checked').forEach(x => selectedAuthors.add(x.value));
+    document.querySelectorAll('#category-filters input:checked:indeterminate').forEach(x => deselectedCategories.add(x.value));
+    document.querySelectorAll('#tag-filters input:checked:indeterminate').forEach(x => deselectedTags.add(x.value));
 
     if (updateUrl) {
         // Constructing query string
         const queryParams = new URLSearchParams(location.search);
         queryParams.delete('selected');
+        queryParams.delete('deselected');
         selectedCategories.forEach(category => queryParams.append('selected', category));
         selectedTags.forEach(tag => queryParams.append('selected', tag));
         selectedAuthors.forEach(author => queryParams.append('selected', author));
+        deselectedCategories.forEach(category => queryParams.append('deselected', category));
+        deselectedTags.forEach(tag => queryParams.append('deselected', tag));
 
         // Update the URL with the new query string
         history.pushState({queryParams: queryParams.toString()}, '', `?${queryParams.toString()}`);
@@ -218,11 +251,15 @@ function filterBooks(updateUrl = true, randomize = false) {
 
     const categories = Array.from(selectedCategories);
     const tags = Array.from(selectedTags);
+    const decategories = Array.from(deselectedCategories);
+    const detags = Array.from(deselectedTags);
     const authors = Array.from(selectedAuthors);
-    const filterBooksWithoutAuthor = (categories.length || tags.length) ? books.filter(book => {
+    const filterBooksWithoutAuthor = (categories.length || tags.length || decategories.length || detags.length) ? books.filter(book => {
         const categoryMatch = categories.length === 0 || categories.every(category => book.categories.includes(category));
         const tagMatch = tags.length === 0 || tags.every(tag => book.tags.includes(tag));
-        return categoryMatch && tagMatch;
+        const decategoryMatch = decategories.length === 0 || decategories.every(category => !book.categories.includes(category));
+        const detagMatch = detags.length === 0 || detags.every(tag => !book.tags.includes(tag));
+        return categoryMatch && tagMatch && decategoryMatch && detagMatch;
     }) : books;
     const filteredBooks = (authors.length) ? filterBooksWithoutAuthor.filter(book => {
         return  authors.length === 0 || authors.every(author => book.authors.includes(author));
@@ -315,6 +352,13 @@ function initFromQueryString(queryString) {
     queryParams.getAll('selected').forEach(value => {
         const input = document.getElementById(value);
         if (input) input.checked = true;
+    });
+    queryParams.getAll('deselected').forEach(value => {
+        const input = document.getElementById(value);
+        if (input) {
+            input.checked = true;
+            input.indeterminate = true;
+        }
     });
 
     const sorting = queryParams.get('sorting') ?? 'name';
