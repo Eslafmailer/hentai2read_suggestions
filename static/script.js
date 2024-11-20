@@ -256,11 +256,10 @@ function filterBooks(updateUrl = true, randomize = false) {
     const detags = Array.from(deselectedTags);
     const authors = Array.from(selectedAuthors);
     const filterBooksWithoutAuthor = (categories.length || tags.length || decategories.length || detags.length) ? books.filter(book => {
-        const categoryMatch = categories.length === 0 || categories.every(category => book.categories.includes(category));
-        const tagMatch = tags.length === 0 || tags.every(tag => book.tags.includes(tag));
-        const decategoryMatch = decategories.length === 0 || decategories.every(category => !book.categories.includes(category));
-        const detagMatch = detags.length === 0 || detags.every(tag => !book.tags.includes(tag));
-        return categoryMatch && tagMatch && decategoryMatch && detagMatch;
+        return categories.every(category => book.categories.includes(category))
+            && tags.every(tag => book.tags.includes(tag))
+            && decategories.every(category => !book.categories.includes(category))
+            && detags.every(tag => !book.tags.includes(tag));
     }) : books;
     const filteredBooks = (authors.length) ? filterBooksWithoutAuthor.filter(book => {
         return  authors.length === 0 || authors.every(author => book.authors.includes(author));
