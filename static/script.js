@@ -11,8 +11,9 @@ function clearAuthorFilter() {
     });
 }
 function clearFilters() {
-    document.querySelectorAll('input:checked').forEach(input => {
+    document.querySelectorAll(':is(input:checked, input:indeterminate)').forEach(input => {
         input.checked = false;
+        input.indeterminate = false;
     });
 }
 
