@@ -186,11 +186,11 @@ function addFilters(filteredBooks, filterBooksWithoutAuthor) {
         author.count = 0;
     }
 
-    const categoryCounts = [...document.querySelectorAll(`#category-filters input:indeterminate`)].reduce((acc, val) => {
+    const categoryCounts = [...document.querySelectorAll(`#category-filters :is(input:checked, input:indeterminate)`)].reduce((acc, val) => {
         acc[val.id] = 0;
         return acc;
     }, {});
-    const tagCounts = [...document.querySelectorAll(`#tag-filters input:indeterminate`)].reduce((acc, val) => {
+    const tagCounts = [...document.querySelectorAll(`#tag-filters :is(input:checked, input:indeterminate)`)].reduce((acc, val) => {
         acc[val.id] = 0;
         return acc;
     }, {});
