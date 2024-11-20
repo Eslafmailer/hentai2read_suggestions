@@ -231,8 +231,8 @@ function filterBooks(updateUrl = true, randomize = false) {
     document.querySelectorAll('#category-filters input:checked:not(:indeterminate)').forEach(x => selectedCategories.add(x.value));
     document.querySelectorAll('#tag-filters input:checked:not(:indeterminate)').forEach(x => selectedTags.add(x.value));
     document.querySelectorAll('#author-filters input:checked').forEach(x => selectedAuthors.add(x.value));
-    document.querySelectorAll('#category-filters input:checked:indeterminate').forEach(x => deselectedCategories.add(x.value));
-    document.querySelectorAll('#tag-filters input:checked:indeterminate').forEach(x => deselectedTags.add(x.value));
+    document.querySelectorAll('#category-filters input:indeterminate').forEach(x => deselectedCategories.add(x.value));
+    document.querySelectorAll('#tag-filters input:indeterminate').forEach(x => deselectedTags.add(x.value));
 
     if (updateUrl) {
         // Constructing query string
