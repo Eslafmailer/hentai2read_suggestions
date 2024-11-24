@@ -58,6 +58,10 @@ body, html {
     min-height: 0; /* Allows for proper scrolling in flex containers */
 }
 
+[type=radio]:checked + label {
+    font-weight: bold;
+}
+
 #books {
     flex-grow: 1;
     padding: 10px;
