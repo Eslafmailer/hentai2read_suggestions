@@ -16,6 +16,7 @@ function clearFilters() {
     selectedTags.clear();
     deselectedCategories.clear();
     deselectedTags.clear();
+    selectedAuthors.clear();
 }
 
 document.getElementById('clear-authors').addEventListener('click', () => {
@@ -26,7 +27,6 @@ document.getElementById('clear-authors').addEventListener('click', () => {
 document.addEventListener('click', ({target}) => {
     if (target && target.className === 'book-author' && target.dataset.author) {
         clearFilters();
-        selectedAuthors.clear();
         selectedAuthors.add(target.dataset.author);
         filterBooks();
     }
@@ -88,10 +88,7 @@ function updateCheckboxState(checkbox, checked, indeterminated) {
 
 window.addEventListener('popstate', (event) => {
     clearFilters();
-
-    if (event.state && event.state.queryParams) {
-        initFromQueryString(event.state.queryParams);
-    }
+    initFromQueryString(event.state?.queryParams ?? '');
 });
 
 const randomBooksButton = document.getElementById('randomBooks');
