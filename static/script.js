@@ -370,7 +370,7 @@ function initFromQueryString(queryString) {
         selectedAuthors.add(value);
     });
 
-    const sorting = queryParams.get('sorting') ?? 'name';
+    const sorting = queryParams.get('sorting') ?? '-uploaded';
     document.getElementById('sorting').value = sorting;
 
     sortBooks(sorting)
@@ -417,6 +417,14 @@ function sortBooks(term) {
         }
         case '-coverScore': {
             books.sort((a, b) => b.coverScore - a.coverScore);
+            break;
+        }
+        case 'uploaded': {
+            books.sort((a, b) => a.uploaded - b.uploaded);
+            break;
+        }
+        case '-uploaded': {
+            books.sort((a, b) => b.uploaded - a.uploaded);
             break;
         }
     }
